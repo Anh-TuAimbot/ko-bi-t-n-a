@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI Assistant</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX cho công thức Toán -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- Marked.js cho Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .katex-display { overflow-x: auto; overflow-y: hidden; margin: 0.5em 0; }
+        .prose pre { background-color: #1e293b; color: #f8fafc; padding: 1rem; border-radius: 0.75rem; }
+        .prose code { color: #2563eb; font-weight: 600; }
+        .prose pre code { color: inherit; font-weight: normal; }
+    </style>
+</head>
+<body class="bg-[#f8fafd] text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Header -->
+    <header class="w-full max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">✨</span>
+            <span class="font-semibold text-lg text-slate-700">Gemini</span>
+        </div>
+    </header>
+
+    <!-- Chat Container -->
+    <main class="flex-1 max-w-3xl w-full mx-auto p-4 flex flex-col justify-between">
+        
+        <!-- Chat History -->
+        <div id="chatHistory" class="space-y-6 mb-6 overflow-y-auto">
+            <!-- Màn hình chào mặc định -->
+            <div id="welcomeState" class="text-center my-16 space-y-3">
+                <h1 class="text-3xl font-medium bg-gradient-to-r from-blue-600 to-red-500 bg-clip-text text-transparent">
+                    Xin chào, tôi có thể giúp gì cho bạn?
+                </h1>
+                <p class="text-slate-400 text-sm">Chèn câu hỏi hoặc tải ảnh lên để bắt đầu trò chuyện.</p>
+            </div>
+        </div>
+
+        <!-- Khung nhập tin nhắn (Giao diện Gemini) -->
+        <div class="sticky bottom-4 bg-white rounded-3xl shadow-lg border border-slate-200 p-3">
+            
+            <!-- Xem trước ảnh tải lên -->
+            <div id="previewContainer" class="hidden relative inline-block mb-2 ml-2">
+                <img id="imagePreview" src="" class="h-16 w-16 object-cover rounded-xl border">
+                <button id="removeImage" class="absolute -top-2 -right-2 bg-slate-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">✕</button>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <!-- Nút tải ảnh -->
+                <button id="uploadBtn" class="p-2.5 hover:bg-slate-100 rounded-full text-slate-500 transition" title="Tải ảnh lên">
+                    🖼️
+                </button>
+                <input type="file" id="imageInput" accept="image/*" class="hidden">
+
+                <!-- Ô nhập văn bản -->
+                <textarea id="userInput" rows="1" placeholder="Hỏi Gemini..." class="flex-1 bg-transparent resize-none outline-none text-slate-800 placeholder-slate-400 text-base max-h-32 py-1.5"></textarea>
+
+                <!-- Nút gửi -->
+                <button id="sendBtn" class="p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition flex items-center justify-center">
+                    ➔
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const chatHistory = document.getElementById('chatHistory');
+        const welcomeState = document.getElementById('welcomeState');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const imageInput = document.getElementById('imageInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImage');
+
+        let currentBase64Image = null;
+
+        // Tự động chỉnh độ cao khung văn bản khi gõ
+        userInput.addEventListener('input', () => {
+            userInput.style.height = 'auto';
+            userInput.style.height = userInput.scrollHeight + 'px';
+        });
+
+        // Xử lý chọn/xóa ảnh
+        uploadBtn.onclick = () => imageInput.click();
+        imageInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    currentBase64Image = evt.target.result.split(',')[1];
+                    imagePreview.src = evt.target.result;
+                    previewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        removeImageBtn.onclick = () => {
+            currentBase64Image = null;
+            imageInput.value = '';
+            previewContainer.classList.add('hidden');
+        };
+
+        // Render Markdown và Công thức Toán (KaTeX)
+        function renderFormattedText(element, rawText) {
+            element.innerHTML = marked.parse(rawText);
+            renderMathInElement(element, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
+
+        // Thêm tin nhắn của Người dùng vào Giao diện
+        function appendUserMessage(text, imgSrc) {
+            if (welcomeState) welcomeState.classList.add('hidden');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "flex flex-col items-end gap-2 my-4";
+            
+            let imgHTML = imgSrc ? `<img src="${imgSrc}" class="max-w-xs max-h-48 rounded-2xl mb-1 border">` : '';
+            let textHTML = text ? `<div class="bg-slate-200 text-slate-800 px-4 py-2.5 rounded-2xl max-w-lg text-sm">${text}</div>` : '';
+
+            msgDiv.innerHTML = imgHTML + textHTML;
+            chatHistory.appendChild(msgDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        // Tạo khung phản hồi của AI
+        function createAiMessageContainer() {
+            if (welcomeState) welcomeState.classList.add('hidden');
+            const container = document.createElement('div');
+            container.className = "flex gap-3 my-4";
+            container.innerHTML = `
+                <div class="text-xl">✨</div>
+                <div class="prose max-w-none text-slate-800 text-sm flex-1 leading-relaxed ai-content">
+                    <span class="text-slate-400 animate-pulse">Đang suy nghĩ...</span>
+                </div>
+            `;
+            chatHistory.appendChild(container);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            return container.querySelector('.ai-content');
+        }
+
+        // Gửi câu hỏi và xử lý phản hồi
+        sendBtn.onclick = async () => {
+            const promptText = userInput.value.trim();
+            if (!promptText && !currentBase64Image) return;
+
+            // Hiển thị tin nhắn người dùng
+            const tempImgSrc = imagePreview.src;
+            appendUserMessage(promptText, currentBase64Image ? tempImgSrc : null);
+
+            // Reset khung nhập
+            userInput.value = '';
+            userInput.style.height = 'auto';
+            const base64Data = currentBase64Image;
+            removeImageBtn.click();
+
+            // Khung chờ cho AI
+            const aiContentNode = createAiMessageContainer();
+
+            try {
+                // Tạo câu trả lời giả lập hoặc xử lý trực tiếp
+                // Lưu ý: Nếu sử dụng API trên Server/Backend riêng, bạn hãy cập nhật URL backend vào đây.
+                const responseText = "Đây là phản hồi trực tiếp từ giao diện Gemini. Bạn có thể chèn nội dung câu hỏi hoặc hình ảnh thoải mái mà không cần nhập API Key!";
+                
+                // Render kết quả
+                renderFormattedText(aiContentNode, responseText);
+
+            } catch (err) {
+                aiContentNode.innerHTML = `<span class="text-red-500">❌ Đã xảy ra lỗi: ${err.message}</span>`;
+            }
+        };
+
+        // Nhấn Enter để gửi (Shift + Enter để xuống dòng)
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
