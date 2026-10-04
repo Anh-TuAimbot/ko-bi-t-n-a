@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini AI Assistant</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Marked.js for Markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- KaTeX for Math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+  <style>
+    .chat-bubble-user {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      border-radius: 1.5rem 1.5rem 0.25rem 1.5rem;
+    }
+    .chat-bubble-ai {
+      background-color: #ffffff;
+      color: #0f172a;
+      border-radius: 1.5rem 1.5rem 1.5rem 0.25rem;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col font-sans">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 px-4 py-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+    <div class="flex items-center space-x-2">
+      <span class="text-2xl">✨</span>
+      <h1 class="text-xl font-semibold text-slate-800">Gemini</h1>
+    </div>
+    <button id="open-config-btn" class="flex items-center space-x-1 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors">
+      <span>⚙️</span>
+      <span>Cấu hình API Key</span>
+    </button>
+  </header>
+
+  <!-- Main Chat Container -->
+  <main class="flex-1 max-w-3xl w-full mx-auto p-4 flex flex-col justify-between">
+    
+    <!-- Messages View -->
+    <div id="chat-box" class="space-y-4 mb-20 overflow-y-auto">
+      <div id="welcome-message" class="text-center py-12">
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">Xin chào, tôi có thể giúp gì cho bạn?</h2>
+        <p class="text-slate-500 text-sm">Hỏi bài tập, giải toán, viết code hoặc bất cứ câu hỏi nào để bắt đầu.</p>
+      </div>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-slate-50 via-slate-50 to-transparent p-4">
+      <div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-lg p-2 flex flex-col space-y-2">
+        
+        <!-- Image Preview -->
+        <div id="image-preview-container" class="hidden relative inline-block w-20 h-20 ml-2 mt-1">
+          <img id="image-preview" src="" class="w-full h-full object-cover rounded-xl border border-slate-200">
+          <button id="remove-image-btn" class="absolute -top-2 -right-2 bg-slate-800 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">✕</button>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Upload Image Button -->
+          <label class="cursor-pointer p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors">
+            🖼️
+            <input type="file" id="image-input" accept="image/*" class="hidden">
+          </label>
+
+          <!-- Text Area -->
+          <input type="text" id="user-input" placeholder="Hỏi Gemini..." class="flex-1 outline-none text-slate-800 placeholder-slate-400 px-2 py-1 text-base">
+
+          <!-- Send Button -->
+          <button id="send-btn" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition-colors flex items-center justify-center w-10 h-10 shadow">
+            ➔
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Cấu hình API Key -->
+  <div id="config-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+      <h3 class="text-lg font-bold text-slate-800">Cấu hình Gemini API Key</h3>
+      <p class="text-sm text-slate-500">Nhập API Key lấy từ Google AI Studio của bạn vào đây.</p>
+      <input type="password" id="api-key-input" placeholder="AQ.Ab8RN6..." class="w-full border border-slate-300 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+      <div class="flex justify-end space-x-2">
+        <button id="close-config-btn" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-xl">Hủy</button>
+        <button id="save-config-btn" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl">Lưu API Key</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const chatBox = document.getElementById('chat-box');
+    const welcomeMessage = document.getElementById('welcome-message');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const imageInput = document.getElementById('image-input');
+    const imagePreviewContainer = document.getElementById('image-preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    const removeImageBtn = document.getElementById('remove-image-btn');
+
+    const configModal = document.getElementById('config-modal');
+    const openConfigBtn = document.getElementById('open-config-btn');
+    const closeConfigBtn = document.getElementById('close-config-btn');
+    const saveConfigBtn = document.getElementById('save-config-btn');
+    const apiKeyInput = document.getElementById('api-key-input');
+
+    let base64ImageData = null;
+
+    // Load API Key
+    let apiKey = localStorage.getItem('GEMINI_API_KEY') || '';
+    if (apiKey) apiKeyInput.value = apiKey;
+
+    // Modal Control
+    openConfigBtn.addEventListener('click', () => configModal.classList.remove('hidden') || configModal.classList.add('flex'));
+    closeConfigBtn.addEventListener('click', () => configModal.classList.add('hidden'));
+    saveConfigBtn.addEventListener('click', () => {
+      apiKey = apiKeyInput.value.trim();
+      localStorage.setItem('GEMINI_API_KEY', apiKey);
+      configModal.classList.add('hidden');
+      alert('Đã lưu API Key thành công!');
+    });
+
+    // Handle Image Upload
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          base64ImageData = event.target.result.split(',')[1];
+          imagePreview.src = event.target.result;
+          imagePreviewContainer.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    removeImageBtn.addEventListener('click', () => {
+      base64ImageData = null;
+      imageInput.value = '';
+      imagePreviewContainer.classList.add('hidden');
+    });
+
+    // Append Message
+    function appendMessage(sender, text, imageSrc = null) {
+      if (welcomeMessage) welcomeMessage.style.display = 'none';
+
+      const msgContainer = document.createElement('div');
+      msgContainer.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = `max-w-[85%] p-4 text-sm leading-relaxed shadow-sm ${sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai border border-slate-200'}`;
+
+      if (imageSrc) {
+        const img = document.createElement('img');
+        img.src = imageSrc;
+        img.className = 'w-48 rounded-lg mb-2 border border-slate-200';
+        bubble.appendChild(img);
+      }
+
+      const textNode = document.createElement('div');
+      textNode.innerHTML = sender === 'ai' ? marked.parse(text) : text;
+      bubble.appendChild(textNode);
+
+      msgContainer.appendChild(bubble);
+      chatBox.appendChild(msgContainer);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      if (sender === 'ai' && window.renderMathInElement) {
+        renderMathInElement(bubble, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ]
+        });
+      }
+    }
+
+    // Call Gemini API
+    async function sendMessage() {
+      const prompt = userInput.value.trim();
+      if (!prompt && !base64ImageData) return;
+
+      if (!apiKey) {
+        alert('Vui lòng bấm nút "Cấu hình API Key" ở góc trên để nhập Key trước khi chat!');
+        configModal.classList.remove('hidden');
+        return;
+      }
+
+      const currentImage = base64ImageData ? imagePreview.src : null;
+      appendMessage('user', prompt, currentImage);
+
+      // Reset Inputs
+      userInput.value = '';
+      const currentBase64 = base64ImageData;
+      base64ImageData = null;
+      imageInput.value = '';
+      imagePreviewContainer.classList.add('hidden');
+
+      // Loading Bubble
+      const loadingContainer = document.createElement('div');
+      loadingContainer.className = 'flex justify-start';
+      loadingContainer.innerHTML = `<div class="chat-bubble-ai border border-slate-200 p-4 text-slate-400 text-sm italic">Gemini đang suy nghĩ...</div>`;
+      chatBox.appendChild(loadingContainer);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const contents = [];
+        const parts = [];
+
+        if (prompt) parts.push({ text: prompt });
+        if (currentBase64) {
+          parts.push({
+            inline_data: {
+              mime_type: 'image/jpeg',
+              data: currentBase64
+            }
+          });
+        }
+
+        contents.push({ parts });
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents })
+        });
+
+        const data = await response.json();
+        chatBox.removeChild(loadingContainer);
+
+        if (data.error) {
+          appendMessage('ai', `❌ Đã xảy ra lỗi: ${data.error.message}`);
+        } else {
+          const aiResponse = data.candidates[0].content.parts[0].text;
+          appendMessage('ai', aiResponse);
+        }
+      } catch (err) {
+        chatBox.removeChild(loadingContainer);
+        appendMessage('ai', '❌ Lỗi kết nối API. Vui lòng kiểm tra lại mạng hoặc API Key.');
+      }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>
