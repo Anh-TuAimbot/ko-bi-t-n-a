@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tạo Key Theo Mẫu Mẫu</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 25px; max-width: 650px; margin: auto; background: #f8f9fa; }
+    .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    input, textarea { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    textarea { height: 180px; font-family: monospace; }
+    button { padding: 12px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; }
+    button:hover { background: #218838; }
+    .note { font-size: 13px; color: #6c757d; margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h2>Bộ Sinh Key Theo Mẫu Cho Trước</h2>
+    
+    <label><b>1. Nhập mẫu Key của bạn:</b></label>
+    <input type="text" id="pattern" value="KEY-XXXX-9999-****">
+    <div class="note">
+      <i>Quy tắc gõ mẫu:</i><br>
+      • <b>X</b> = Chữ cái ngẫu nhiên (A-Z)<br>
+      • <b>9</b> = Số ngẫu nhiên (0-9)<br>
+      • <b>*</b> = Cả chữ và số ngẫu nhiên<br>
+      • Các chữ còn lại hoặc dấu <b>-</b> sẽ giữ nguyên.
+    </div>
+
+    <label><b>2. Số lượng Key cần tạo:</b></label>
+    <input type="number" id="count" value="10" min="1" max="500">
+
+    <button onclick="generateFromPattern()">Tạo Hàng Loạt Key</button>
+
+    <h3 style="margin-top: 20px;">Danh sách Key tạo ra (Dạng JSON để dán vào GitHub):</h3>
+    <textarea id="output" readonly placeholder="Kết quả sẽ hiển thị ở đây..."></textarea>
+  </div>
+
+  <script>
+    function generateSingleKey(pattern) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const nums = '0123456789';
+      const alphaNums = chars + nums;
+
+      let result = '';
+      for (let i = 0; i < pattern.length; i++) {
+        const char = pattern[i];
+        if (char === 'X') {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        } else if (char === '9') {
+          result += nums.charAt(Math.floor(Math.random() * nums.length));
+        } else if (char === '*') {
+          result += alphaNums.charAt(Math.floor(Math.random() * alphaNums.length));
+        } else {
+          result += char; // Giữ nguyên ký tự cố định
+        }
+      }
+      return result;
+    }
+
+    function generateFromPattern() {
+      const pattern = document.getElementById('pattern').value.trim();
+      const count = parseInt(document.getElementById('count').value);
+      
+      if (!pattern) {
+        alert("Vui lòng nhập mẫu Key!");
+        return;
+      }
+
+      const keysObj = {};
+
+      for (let i = 0; i < count; i++) {
+        const generatedKey = generateSingleKey(pattern);
+        keysObj[generatedKey] = {
+          status: "Active",
+          created: new Date().toISOString().split('T')[0],
+          expire: "2026-12-31" // Hạn sử dụng mặc định
+        };
+      }
+
+      document.getElementById('output').value = JSON.stringify(keysObj, null, 2);
+    }
+  </script>
+
+</body>
+</html>
