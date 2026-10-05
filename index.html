@@ -3,15 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CYBER KEY GENERATOR v2.0</title>
+  <title>CYBER KEY HUB v3.0</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background-color: #05050a;
@@ -25,244 +21,239 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
-      overflow-x: hidden;
     }
 
-    /* Khung chính Glassmorphism */
     .cyber-card {
-      background: rgba(10, 10, 20, 0.75);
+      background: rgba(10, 10, 20, 0.85);
       backdrop-filter: blur(16px);
       border: 1px solid rgba(0, 240, 255, 0.3);
       border-radius: 16px;
-      padding: 35px;
+      padding: 30px;
       width: 100%;
-      max-width: 680px;
-      box-shadow: 
-        0 0 30px rgba(0, 240, 255, 0.2),
-        inset 0 0 15px rgba(255, 0, 128, 0.1);
+      max-width: 550px;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
       position: relative;
-    }
-
-    .cyber-card::before {
-      content: '';
-      position: absolute;
-      top: -2px; left: -2px; right: -2px; bottom: -2px;
-      background: linear-gradient(45deg, #ff007f, #00f0ff, #7000ff, #ff007f);
-      border-radius: 18px;
-      z-index: -1;
-      background-size: 400%;
-      animation: glowingBorder 8s linear infinite;
-      opacity: 0.7;
-    }
-
-    @keyframes glowingBorder {
-      0% { background-position: 0 0; }
-      50% { background-position: 400% 0; }
-      100% { background-position: 0 0; }
     }
 
     h1 {
       font-family: 'Orbitron', sans-serif;
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 900;
       text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       color: #fff;
-      text-shadow: 
-        0 0 10px #00f0ff,
-        0 0 20px #00f0ff,
-        0 0 40px #ff007f;
+      text-shadow: 0 0 10px #00f0ff, 0 0 20px #ff007f;
+      margin-bottom: 20px;
+    }
+
+    /* Tab Switcher */
+    .tabs {
+      display: flex;
+      gap: 10px;
       margin-bottom: 25px;
     }
 
-    .form-group {
-      margin-bottom: 20px;
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: rgba(112, 0, 255, 0.2);
+      border: 1px solid #7000ff;
+      border-radius: 8px;
+      color: #a0a0c0;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
+
+    .tab-btn.active {
+      background: linear-gradient(90deg, #ff007f, #7000ff);
+      color: #fff;
+      border-color: #00f0ff;
+      box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
+    }
+
+    /* Content Sections */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .form-group { margin-bottom: 18px; }
 
     label {
       display: block;
       font-weight: 700;
       margin-bottom: 8px;
-      letter-spacing: 1px;
       color: #e0e0e0;
-      text-transform: uppercase;
-      font-size: 14px;
+      letter-spacing: 1px;
+      font-size: 13px;
     }
 
-    /* Input & Textarea ma mị */
-    input[type="text"], input[type="number"], textarea {
+    input, textarea {
       width: 100%;
-      background: rgba(5, 5, 12, 0.8);
+      background: rgba(5, 5, 12, 0.9);
       border: 1px solid #7000ff;
       border-radius: 8px;
-      padding: 12px 16px;
-      color: #ff007f;
+      padding: 12px;
+      color: #00f0ff;
       font-family: 'Orbitron', monospace;
-      font-size: 15px;
+      font-size: 14px;
       outline: none;
       transition: all 0.3s ease;
-      box-shadow: inset 0 0 10px rgba(112, 0, 255, 0.2);
     }
 
-    input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+    input:focus, textarea:focus {
       border-color: #00f0ff;
-      box-shadow: 
-        0 0 15px rgba(0, 240, 255, 0.5),
-        inset 0 0 10px rgba(0, 240, 255, 0.3);
-      color: #00f0ff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
     }
 
-    .rules-panel {
-      background: rgba(112, 0, 255, 0.1);
-      border-left: 3px solid #ff007f;
-      padding: 10px 15px;
-      border-radius: 0 8px 8px 0;
-      margin-top: 8px;
-      font-size: 13px;
-      color: #a0a0c0;
-      line-height: 1.6;
-    }
-
-    .rules-panel b { color: #00f0ff; }
-    .rules-panel span { color: #ff007f; font-weight: bold; }
-
-    /* Nút bấm Neon Siêu Ngầu */
     .btn-cyber {
-      position: relative;
       width: 100%;
-      padding: 15px;
-      background: linear-gradient(90deg, #ff007f, #7000ff);
+      padding: 14px;
+      background: linear-gradient(90deg, #00f0ff, #7000ff);
       border: none;
       border-radius: 8px;
       color: #fff;
       font-family: 'Orbitron', sans-serif;
-      font-size: 16px;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+      font-size: 15px;
       cursor: pointer;
-      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
       transition: all 0.3s ease;
-      box-shadow: 0 0 20px rgba(255, 0, 128, 0.4);
       margin-top: 10px;
     }
 
     .btn-cyber:hover {
-      background: linear-gradient(90deg, #00f0ff, #ff007f);
-      box-shadow: 0 0 35px rgba(0, 240, 255, 0.8);
-      transform: translateY(-2px);
+      background: linear-gradient(90deg, #ff007f, #00f0ff);
+      box-shadow: 0 0 30px rgba(255, 0, 128, 0.7);
     }
 
-    .btn-cyber:active {
-      transform: translateY(1px);
+    #result {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-family: 'Orbitron', monospace;
+      font-weight: bold;
+      display: none;
     }
 
-    textarea {
-      height: 160px;
-      resize: vertical;
-      color: #00f0ff;
-      font-size: 13px;
-      margin-top: 8px;
-    }
+    .valid { background: rgba(0, 255, 102, 0.1); border: 1px solid #00ff66; color: #00ff66; text-shadow: 0 0 10px #00ff66; }
+    .invalid { background: rgba(255, 0, 85, 0.1); border: 1px solid #ff0055; color: #ff0055; text-shadow: 0 0 10px #ff0055; }
 
-    /* Thanh cuộn Cyberpunk */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #05050a; }
-    ::-webkit-scrollbar-thumb { background: #7000ff; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #ff007f; }
+    textarea { height: 140px; resize: none; margin-top: 8px; font-size: 12px; }
   </style>
 </head>
 <body>
 
   <div class="cyber-card">
-    <h1>⚡ KEY GENERATOR PRO ⚡</h1>
+    <h1>⚡ CYBER KEY SYSTEM ⚡</h1>
 
-    <div class="form-group">
-      <label>1. Nhập mẫu Key của bạn:</label>
-      <input type="text" id="pattern" value="CYBER-XXXX-9999-****">
-      <div class="rules-panel">
-        <b>Quy tắc biến đổi mẫu:</b><br>
-        • <span>X</span> = Chữ cái ngẫu nhiên (A-Z)<br>
-        • <span>9</span> = Chữ số ngẫu nhiên (0-9)<br>
-        • <span>*</span> = Cả chữ & số ngẫu nhiên<br>
-        • Các ký tự khác (như <b>-</b>, <b>_</b>, chữ cố định) sẽ được giữ nguyên!
+    <!-- Tab Buttons -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('check')">🔍 KIỂM TRA KEY</button>
+      <button class="tab-btn" onclick="switchTab('generate')">⚡ TẠO KEY (ADMIN)</button>
+    </div>
+
+    <!-- TAB 1: CHECK KEY -->
+    <div id="check-tab" class="tab-content active">
+      <div class="form-group">
+        <label>NHẬP LICENSE KEY CỦA BẠN:</label>
+        <input type="text" id="keyInput" placeholder="VD: VIP-A8F2-99BC-1E3D">
       </div>
+      <button class="btn-cyber" onclick="verifyKey()">XÁC NHẬN KEY</button>
+      <div id="result"></div>
     </div>
 
-    <div class="form-group">
-      <label>2. Số lượng Key cần sinh:</label>
-      <input type="number" id="count" value="10" min="1" max="1000">
-    </div>
+    <!-- TAB 2: GENERATE KEY -->
+    <div id="generate-tab" class="tab-content">
+      <div class="form-group">
+        <label>TIỀN TỐ (PREFIX):</label>
+        <input type="text" id="prefix" value="VIP">
+      </div>
+      <div class="form-group">
+        <label>SỐ LƯỢNG KEY CẦN TẠO:</label>
+        <input type="number" id="count" value="10" min="1" max="100">
+      </div>
+      <button class="btn-cyber" onclick="generateKeys()">TẠO DANH SÁCH KEY</button>
 
-    <button class="btn-cyber" onclick="generateKeys()">
-      🚀 TẠO HÀNG LOẠT KEY NEON 🚀
-    </button>
-
-    <div class="form-group" style="margin-top: 25px;">
-      <label>Kết quả xuất ra (Dán thẳng vào GitHub):</label>
-      <textarea id="output" readonly placeholder="Mã JSON Cyberpunk sẽ xuất hiện ở đây..."></textarea>
+      <div class="form-group" style="margin-top: 15px;">
+        <label>KẾT QUẢ (COPY GỬI CHO KHÁCH):</label>
+        <textarea id="output" readonly placeholder="Danh sách Key hợp lệ sẽ xuất hiện ở đây..."></textarea>
+      </div>
     </div>
   </div>
 
   <script>
-    function getRandomChar(chars) {
-      return chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+    // Chuyển đổi Tab
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-    function generateSingleKey(pattern) {
-      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const digits = '0123456789';
-      const alphaNums = letters + digits;
-
-      let result = '';
-      for (let i = 0; i < pattern.length; i++) {
-        const char = pattern[i];
-        if (char === 'X') {
-          result += getRandomChar(letters);
-        } else if (char === '9') {
-          result += getRandomChar(digits);
-        } else if (char === '*') {
-          result += getRandomChar(alphaNums);
-        } else {
-          result += char;
-        }
+      if (tabName === 'check') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('check-tab').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('generate-tab').classList.add('active');
       }
-      return result;
     }
 
-    function generateKeys() {
-      const pattern = document.getElementById('pattern').value.trim();
-      const count = parseInt(document.getElementById('count').value);
+    // Algothrim mã hóa Checksum bí mật
+    function calculateSignature(body) {
+      let checksum = 0;
+      for (let i = 0; i < body.length; i++) {
+        checksum += body.charCodeAt(i) * (i + 1);
+      }
+      return (checksum % 65535).toString(16).toUpperCase().padStart(4, '0');
+    }
 
-      if (!pattern) {
-        alert("Vui lòng nhập mẫu Key!");
+    // 1. Logic Kiểm tra Key
+    function verifyKey() {
+      const key = document.getElementById('keyInput').value.trim().toUpperCase();
+      const res = document.getElementById('result');
+      res.style.display = 'block';
+
+      const parts = key.split('-');
+      if (parts.length < 2) {
+        res.className = 'invalid';
+        res.innerText = '✖ KEY KHÔNG ĐÚNG ĐỊNH DẠNG!';
         return;
       }
 
-      const keysObj = {};
+      const signature = parts.pop();
+      const body = parts.join('-');
+      const expectedSig = calculateSignature(body);
+
+      if (signature === expectedSig) {
+        res.className = 'valid';
+        res.innerText = '✔ KEY HỢP LỆ (ACTIVATED)';
+      } else {
+        res.className = 'invalid';
+        res.innerText = '✖ KEY KHÔNG TỒN TẠI HẶC BỊ SỬA ĐỔI!';
+      }
+    }
+
+    // 2. Logic Sinh Key chuẩn 100%
+    function makeRandomString(length) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let res = '';
+      for (let i = 0; i < length; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+      return res;
+    }
+
+    function generateKeys() {
+      const prefix = document.getElementById('prefix').value.trim().toUpperCase() || 'KEY';
+      const count = parseInt(document.getElementById('count').value);
+      let keyList = [];
 
       for (let i = 0; i < count; i++) {
-        const generatedKey = generateSingleKey(pattern);
-        keysObj[generatedKey] = {
-          status: "Active",
-          created: new Date().toISOString().split('T')[0],
-          expire: "2026-12-31"
-        };
+        const body = `${prefix}-${makeRandomString(4)}-${makeRandomString(4)}`;
+        const signature = calculateSignature(body);
+        keyList.push(`${body}-${signature}`);
       }
 
-      const outputArea = document.getElementById('output');
-      outputArea.value = JSON.stringify(keysObj, null, 2);
-
-      // Hiệu ứng phát sáng khi bấm nút thành công
-      outputArea.style.borderColor = "#00f0ff";
-      outputArea.style.boxShadow = "0 0 25px rgba(0, 240, 255, 0.6)";
-      setTimeout(() => {
-        outputArea.style.borderColor = "#7000ff";
-        outputArea.style.boxShadow = "inset 0 0 10px rgba(112, 0, 255, 0.2)";
-      }, 1000);
+      document.getElementById('output').value = keyList.join('\n');
     }
   </script>
-
 </body>
 </html>
