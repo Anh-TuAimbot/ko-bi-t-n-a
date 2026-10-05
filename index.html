@@ -2,67 +2,239 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Tạo Key Theo Mẫu Mẫu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBER KEY GENERATOR v2.0</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 25px; max-width: 650px; margin: auto; background: #f8f9fa; }
-    .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    input, textarea { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-    textarea { height: 180px; font-family: monospace; }
-    button { padding: 12px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; }
-    button:hover { background: #218838; }
-    .note { font-size: 13px; color: #6c757d; margin-bottom: 15px; }
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #05050a;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(255, 0, 128, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(0, 240, 255, 0.15) 0%, transparent 40%);
+      color: #00f0ff;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* Khung chính Glassmorphism */
+    .cyber-card {
+      background: rgba(10, 10, 20, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 16px;
+      padding: 35px;
+      width: 100%;
+      max-width: 680px;
+      box-shadow: 
+        0 0 30px rgba(0, 240, 255, 0.2),
+        inset 0 0 15px rgba(255, 0, 128, 0.1);
+      position: relative;
+    }
+
+    .cyber-card::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: linear-gradient(45deg, #ff007f, #00f0ff, #7000ff, #ff007f);
+      border-radius: 18px;
+      z-index: -1;
+      background-size: 400%;
+      animation: glowingBorder 8s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes glowingBorder {
+      0% { background-position: 0 0; }
+      50% { background-position: 400% 0; }
+      100% { background-position: 0 0; }
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #fff;
+      text-shadow: 
+        0 0 10px #00f0ff,
+        0 0 20px #00f0ff,
+        0 0 40px #ff007f;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      color: #e0e0e0;
+      text-transform: uppercase;
+      font-size: 14px;
+    }
+
+    /* Input & Textarea ma mị */
+    input[type="text"], input[type="number"], textarea {
+      width: 100%;
+      background: rgba(5, 5, 12, 0.8);
+      border: 1px solid #7000ff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #ff007f;
+      font-family: 'Orbitron', monospace;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 0 10px rgba(112, 0, 255, 0.2);
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+      border-color: #00f0ff;
+      box-shadow: 
+        0 0 15px rgba(0, 240, 255, 0.5),
+        inset 0 0 10px rgba(0, 240, 255, 0.3);
+      color: #00f0ff;
+    }
+
+    .rules-panel {
+      background: rgba(112, 0, 255, 0.1);
+      border-left: 3px solid #ff007f;
+      padding: 10px 15px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #a0a0c0;
+      line-height: 1.6;
+    }
+
+    .rules-panel b { color: #00f0ff; }
+    .rules-panel span { color: #ff007f; font-weight: bold; }
+
+    /* Nút bấm Neon Siêu Ngầu */
+    .btn-cyber {
+      position: relative;
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(90deg, #ff007f, #7000ff);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(255, 0, 128, 0.4);
+      margin-top: 10px;
+    }
+
+    .btn-cyber:hover {
+      background: linear-gradient(90deg, #00f0ff, #ff007f);
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.8);
+      transform: translateY(-2px);
+    }
+
+    .btn-cyber:active {
+      transform: translateY(1px);
+    }
+
+    textarea {
+      height: 160px;
+      resize: vertical;
+      color: #00f0ff;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    /* Thanh cuộn Cyberpunk */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #05050a; }
+    ::-webkit-scrollbar-thumb { background: #7000ff; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff007f; }
   </style>
 </head>
 <body>
 
-  <div class="box">
-    <h2>Bộ Sinh Key Theo Mẫu Cho Trước</h2>
-    
-    <label><b>1. Nhập mẫu Key của bạn:</b></label>
-    <input type="text" id="pattern" value="KEY-XXXX-9999-****">
-    <div class="note">
-      <i>Quy tắc gõ mẫu:</i><br>
-      • <b>X</b> = Chữ cái ngẫu nhiên (A-Z)<br>
-      • <b>9</b> = Số ngẫu nhiên (0-9)<br>
-      • <b>*</b> = Cả chữ và số ngẫu nhiên<br>
-      • Các chữ còn lại hoặc dấu <b>-</b> sẽ giữ nguyên.
+  <div class="cyber-card">
+    <h1>⚡ KEY GENERATOR PRO ⚡</h1>
+
+    <div class="form-group">
+      <label>1. Nhập mẫu Key của bạn:</label>
+      <input type="text" id="pattern" value="CYBER-XXXX-9999-****">
+      <div class="rules-panel">
+        <b>Quy tắc biến đổi mẫu:</b><br>
+        • <span>X</span> = Chữ cái ngẫu nhiên (A-Z)<br>
+        • <span>9</span> = Chữ số ngẫu nhiên (0-9)<br>
+        • <span>*</span> = Cả chữ & số ngẫu nhiên<br>
+        • Các ký tự khác (như <b>-</b>, <b>_</b>, chữ cố định) sẽ được giữ nguyên!
+      </div>
     </div>
 
-    <label><b>2. Số lượng Key cần tạo:</b></label>
-    <input type="number" id="count" value="10" min="1" max="500">
+    <div class="form-group">
+      <label>2. Số lượng Key cần sinh:</label>
+      <input type="number" id="count" value="10" min="1" max="1000">
+    </div>
 
-    <button onclick="generateFromPattern()">Tạo Hàng Loạt Key</button>
+    <button class="btn-cyber" onclick="generateKeys()">
+      🚀 TẠO HÀNG LOẠT KEY NEON 🚀
+    </button>
 
-    <h3 style="margin-top: 20px;">Danh sách Key tạo ra (Dạng JSON để dán vào GitHub):</h3>
-    <textarea id="output" readonly placeholder="Kết quả sẽ hiển thị ở đây..."></textarea>
+    <div class="form-group" style="margin-top: 25px;">
+      <label>Kết quả xuất ra (Dán thẳng vào GitHub):</label>
+      <textarea id="output" readonly placeholder="Mã JSON Cyberpunk sẽ xuất hiện ở đây..."></textarea>
+    </div>
   </div>
 
   <script>
+    function getRandomChar(chars) {
+      return chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
     function generateSingleKey(pattern) {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const nums = '0123456789';
-      const alphaNums = chars + nums;
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const digits = '0123456789';
+      const alphaNums = letters + digits;
 
       let result = '';
       for (let i = 0; i < pattern.length; i++) {
         const char = pattern[i];
         if (char === 'X') {
-          result += chars.charAt(Math.floor(Math.random() * chars.length));
+          result += getRandomChar(letters);
         } else if (char === '9') {
-          result += nums.charAt(Math.floor(Math.random() * nums.length));
+          result += getRandomChar(digits);
         } else if (char === '*') {
-          result += alphaNums.charAt(Math.floor(Math.random() * alphaNums.length));
+          result += getRandomChar(alphaNums);
         } else {
-          result += char; // Giữ nguyên ký tự cố định
+          result += char;
         }
       }
       return result;
     }
 
-    function generateFromPattern() {
+    function generateKeys() {
       const pattern = document.getElementById('pattern').value.trim();
       const count = parseInt(document.getElementById('count').value);
-      
+
       if (!pattern) {
         alert("Vui lòng nhập mẫu Key!");
         return;
@@ -75,11 +247,20 @@
         keysObj[generatedKey] = {
           status: "Active",
           created: new Date().toISOString().split('T')[0],
-          expire: "2026-12-31" // Hạn sử dụng mặc định
+          expire: "2026-12-31"
         };
       }
 
-      document.getElementById('output').value = JSON.stringify(keysObj, null, 2);
+      const outputArea = document.getElementById('output');
+      outputArea.value = JSON.stringify(keysObj, null, 2);
+
+      // Hiệu ứng phát sáng khi bấm nút thành công
+      outputArea.style.borderColor = "#00f0ff";
+      outputArea.style.boxShadow = "0 0 25px rgba(0, 240, 255, 0.6)";
+      setTimeout(() => {
+        outputArea.style.borderColor = "#7000ff";
+        outputArea.style.boxShadow = "inset 0 0 10px rgba(112, 0, 255, 0.2)";
+      }, 1000);
     }
   </script>
 
