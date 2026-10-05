@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CYBER KEY HUB v3.0</title>
+  <title>CYBER KEY HUB v4.0</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
 
@@ -32,7 +32,6 @@
       width: 100%;
       max-width: 550px;
       box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
-      position: relative;
     }
 
     h1 {
@@ -46,12 +45,7 @@
       margin-bottom: 20px;
     }
 
-    /* Tab Switcher */
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 25px;
-    }
+    .tabs { display: flex; gap: 10px; margin-bottom: 25px; }
 
     .tab-btn {
       flex: 1;
@@ -73,7 +67,6 @@
       box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
     }
 
-    /* Content Sections */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
@@ -148,17 +141,17 @@
   <div class="cyber-card">
     <h1>⚡ CYBER KEY SYSTEM ⚡</h1>
 
-    <!-- Tab Buttons -->
+    <!-- Tab Switching -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('check')">🔍 KIỂM TRA KEY</button>
-      <button class="tab-btn" onclick="switchTab('generate')">⚡ TẠO KEY (ADMIN)</button>
+      <button class="tab-btn" onclick="switchTab('generate')">⚡ TẠO KEY MỚI</button>
     </div>
 
     <!-- TAB 1: CHECK KEY -->
     <div id="check-tab" class="tab-content active">
       <div class="form-group">
         <label>NHẬP LICENSE KEY CỦA BẠN:</label>
-        <input type="text" id="keyInput" placeholder="VD: VIP-A8F2-99BC-1E3D">
+        <input type="text" id="keyInput" placeholder="VD: APEX-ZENITH-SOLITUDE-EF86F1EF">
       </div>
       <button class="btn-cyber" onclick="verifyKey()">XÁC NHẬN KEY</button>
       <div id="result"></div>
@@ -167,24 +160,23 @@
     <!-- TAB 2: GENERATE KEY -->
     <div id="generate-tab" class="tab-content">
       <div class="form-group">
-        <label>TIỀN TỐ (PREFIX):</label>
-        <input type="text" id="prefix" value="VIP">
+        <label>MẪU TIỀN TỐ (PREFIX):</label>
+        <input type="text" id="prefix" value="APEX-ZENITH-SOLITUDE">
       </div>
       <div class="form-group">
         <label>SỐ LƯỢNG KEY CẦN TẠO:</label>
-        <input type="number" id="count" value="10" min="1" max="100">
+        <input type="number" id="count" value="5" min="1" max="100">
       </div>
       <button class="btn-cyber" onclick="generateKeys()">TẠO DANH SÁCH KEY</button>
 
       <div class="form-group" style="margin-top: 15px;">
-        <label>KẾT QUẢ (COPY GỬI CHO KHÁCH):</label>
-        <textarea id="output" readonly placeholder="Danh sách Key hợp lệ sẽ xuất hiện ở đây..."></textarea>
+        <label>KẾT QUẢ TẠO KEY:</label>
+        <textarea id="output" readonly placeholder="Danh sách Key chuẩn sẽ hiển thị ở đây..."></textarea>
       </div>
     </div>
   </div>
 
   <script>
-    // Chuyển đổi Tab
     function switchTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -198,16 +190,17 @@
       }
     }
 
-    // Algothrim mã hóa Checksum bí mật
-    function calculateSignature(body) {
-      let checksum = 0;
+    // Thuật toán mã hóa tạo ra 8 ký tự Hex tương tự mẫu EF86F1EF
+    function calculateHexSignature(body) {
+      let hash = 0x811c9dc5;
       for (let i = 0; i < body.length; i++) {
-        checksum += body.charCodeAt(i) * (i + 1);
+        hash ^= body.charCodeAt(i);
+        hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
       }
-      return (checksum % 65535).toString(16).toUpperCase().padStart(4, '0');
+      return (hash >>> 0).toString(16).toUpperCase().padStart(8, '0');
     }
 
-    // 1. Logic Kiểm tra Key
+    // 1. Kiểm tra Key nhập vào
     function verifyKey() {
       const key = document.getElementById('keyInput').value.trim().toUpperCase();
       const res = document.getElementById('result');
@@ -222,18 +215,18 @@
 
       const signature = parts.pop();
       const body = parts.join('-');
-      const expectedSig = calculateSignature(body);
+      const expectedSig = calculateHexSignature(body);
 
       if (signature === expectedSig) {
         res.className = 'valid';
         res.innerText = '✔ KEY HỢP LỆ (ACTIVATED)';
       } else {
         res.className = 'invalid';
-        res.innerText = '✖ KEY KHÔNG TỒN TẠI HẶC BỊ SỬA ĐỔI!';
+        res.innerText = '✖ KEY KHÔNG TỒN TẠI HOẶC BỊ SỬA ĐỔI!';
       }
     }
 
-    // 2. Logic Sinh Key chuẩn 100%
+    // 2. Tạo danh sách Key đúng mẫu
     function makeRandomString(length) {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let res = '';
@@ -242,13 +235,14 @@
     }
 
     function generateKeys() {
-      const prefix = document.getElementById('prefix').value.trim().toUpperCase() || 'KEY';
+      const prefix = document.getElementById('prefix').value.trim().toUpperCase() || 'APEX-ZENITH';
       const count = parseInt(document.getElementById('count').value);
       let keyList = [];
 
       for (let i = 0; i < count; i++) {
-        const body = `${prefix}-${makeRandomString(4)}-${makeRandomString(4)}`;
-        const signature = calculateSignature(body);
+        // Thêm nhóm ngẫu nhiên nhỏ để tạo sự đa dạng cho từng Key nếu muốn, hoặc dùng cố định tiền tố
+        const body = prefix; 
+        const signature = calculateHexSignature(body);
         keyList.push(`${body}-${signature}`);
       }
 
