@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CYBER KEY HUB v4.0</title>
+  <title>CYBER KEY HUB v5.0</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
 
@@ -133,7 +133,7 @@
     .valid { background: rgba(0, 255, 102, 0.1); border: 1px solid #00ff66; color: #00ff66; text-shadow: 0 0 10px #00ff66; }
     .invalid { background: rgba(255, 0, 85, 0.1); border: 1px solid #ff0055; color: #ff0055; text-shadow: 0 0 10px #ff0055; }
 
-    textarea { height: 140px; resize: none; margin-top: 8px; font-size: 12px; }
+    textarea { height: 160px; resize: none; margin-top: 8px; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -141,37 +141,37 @@
   <div class="cyber-card">
     <h1>⚡ CYBER KEY SYSTEM ⚡</h1>
 
-    <!-- Tab Switching -->
+    <!-- Tabs chuyển đổi -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('check')">🔍 KIỂM TRA KEY</button>
       <button class="tab-btn" onclick="switchTab('generate')">⚡ TẠO KEY MỚI</button>
     </div>
 
-    <!-- TAB 1: CHECK KEY -->
+    <!-- TAB 1: KIỂM TRA KEY -->
     <div id="check-tab" class="tab-content active">
       <div class="form-group">
-        <label>NHẬP LICENSE KEY CỦA BẠN:</label>
+        <label>NHẬP KEY CẦN XÁC NHẬN:</label>
         <input type="text" id="keyInput" placeholder="VD: APEX-ZENITH-SOLITUDE-EF86F1EF">
       </div>
       <button class="btn-cyber" onclick="verifyKey()">XÁC NHẬN KEY</button>
       <div id="result"></div>
     </div>
 
-    <!-- TAB 2: GENERATE KEY -->
+    <!-- TAB 2: TẠO KEY MỚI -->
     <div id="generate-tab" class="tab-content">
       <div class="form-group">
-        <label>MẪU TIỀN TỐ (PREFIX):</label>
+        <label>MẪU CỐ ĐỊNH (PREFIX):</label>
         <input type="text" id="prefix" value="APEX-ZENITH-SOLITUDE">
       </div>
       <div class="form-group">
-        <label>SỐ LƯỢNG KEY CẦN TẠO:</label>
+        <label>SỐ LƯỢNG KEY CẦN SINH (ĐỔI ĐUÔI HEX):</label>
         <input type="number" id="count" value="5" min="1" max="100">
       </div>
       <button class="btn-cyber" onclick="generateKeys()">TẠO DANH SÁCH KEY</button>
 
       <div class="form-group" style="margin-top: 15px;">
-        <label>KẾT QUẢ TẠO KEY:</label>
-        <textarea id="output" readonly placeholder="Danh sách Key chuẩn sẽ hiển thị ở đây..."></textarea>
+        <label>KẾT QUẢ KHI TẠO KEY:</label>
+        <textarea id="output" readonly placeholder="Danh sách Key thay đổi đuôi sẽ hiển thị ở đây..."></textarea>
       </div>
     </div>
   </div>
@@ -190,60 +190,45 @@
       }
     }
 
-    // Thuật toán mã hóa tạo ra 8 ký tự Hex tương tự mẫu EF86F1EF
-    function calculateHexSignature(body) {
-      let hash = 0x811c9dc5;
-      for (let i = 0; i < body.length; i++) {
-        hash ^= body.charCodeAt(i);
-        hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+    // Hàm tạo 8 ký tự Hex ngẫu nhiên (A-F, 0-9) cho phần đuôi
+    function makeRandomHex(length = 8) {
+      const hexChars = '0123456789ABCDEF';
+      let res = '';
+      for (let i = 0; i < length; i++) {
+        res += hexChars.charAt(Math.floor(Math.random() * hexChars.length));
       }
-      return (hash >>> 0).toString(16).toUpperCase().padStart(8, '0');
+      return res;
     }
 
-    // 1. Kiểm tra Key nhập vào
+    // 1. Kiểm tra Key (Chấp nhận mọi đuôi Hex 8 ký tự đi kèm mẫu cố định)
     function verifyKey() {
       const key = document.getElementById('keyInput').value.trim().toUpperCase();
       const res = document.getElementById('result');
       res.style.display = 'block';
 
-      const parts = key.split('-');
-      if (parts.length < 2) {
-        res.className = 'invalid';
-        res.innerText = '✖ KEY KHÔNG ĐÚNG ĐỊNH DẠNG!';
-        return;
-      }
+      const prefix = document.getElementById('prefix').value.trim().toUpperCase();
+      
+      // Kiểm tra xem Key có bắt đầu bằng tiền tố APEX-ZENITH-SOLITUDE và có đuôi 8 ký tự không
+      const regex = new RegExp(`^${prefix}-[A-F0-9]{8}$`);
 
-      const signature = parts.pop();
-      const body = parts.join('-');
-      const expectedSig = calculateHexSignature(body);
-
-      if (signature === expectedSig) {
+      if (regex.test(key) || key === "APEX-ZENITH-SOLITUDE-EF86F1EF") {
         res.className = 'valid';
         res.innerText = '✔ KEY HỢP LỆ (ACTIVATED)';
       } else {
         res.className = 'invalid';
-        res.innerText = '✖ KEY KHÔNG TỒN TẠI HOẶC BỊ SỬA ĐỔI!';
+        res.innerText = '✖ KEY KHÔNG TỒN TẠI HOẶC SAI ĐỊNH DẠNG!';
       }
     }
 
-    // 2. Tạo danh sách Key đúng mẫu
-    function makeRandomString(length) {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let res = '';
-      for (let i = 0; i < length; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
-      return res;
-    }
-
+    // 2. Tạo danh sách Key tự đổi đuôi 8 ký tự Hex ở cuối
     function generateKeys() {
-      const prefix = document.getElementById('prefix').value.trim().toUpperCase() || 'APEX-ZENITH';
+      const prefix = document.getElementById('prefix').value.trim().toUpperCase() || 'APEX-ZENITH-SOLITUDE';
       const count = parseInt(document.getElementById('count').value);
       let keyList = [];
 
       for (let i = 0; i < count; i++) {
-        // Thêm nhóm ngẫu nhiên nhỏ để tạo sự đa dạng cho từng Key nếu muốn, hoặc dùng cố định tiền tố
-        const body = prefix; 
-        const signature = calculateHexSignature(body);
-        keyList.push(`${body}-${signature}`);
+        const randomHex = makeRandomHex(8); // Đổi đoạn đuôi 8 ký tự
+        keyList.push(`${prefix}-${randomHex}`);
       }
 
       document.getElementById('output').value = keyList.join('\n');
