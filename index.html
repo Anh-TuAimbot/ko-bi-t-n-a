@@ -3,25 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bảng Điều Khiển Hệ Thống & Key Kích Hoạt</title>
+  <title>Bảng Điều Khiển VIP - ANH TÚ SYSTEM</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+
     :root {
-      --bg-dark: #0a0d14;
-      --card-bg: #121824;
-      --accent: #8b5cf6;
-      --accent-hover: #7c3aed;
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
+      --bg-dark: #05050a;
+      --card-bg: rgba(15, 18, 30, 0.75);
+      --primary: #a855f7;
+      --primary-glow: #c084fc;
+      --cyan: #06b6d4;
+      --cyan-glow: #22d3ee;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
       --green: #10b981;
-      --red: #ef4444;
+      --red: #f43f5e;
       --yellow: #f59e0b;
-      --border: #1f2937;
+      --border: rgba(168, 85, 247, 0.3);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Rajdhani', sans-serif; }
 
     body {
       background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 10% 10%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
+        radial-gradient(at 90% 90%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -30,167 +37,231 @@
       padding: 20px;
     }
 
+    h1, h4, .btn, .tab-btn {
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    /* Thanh Chuyển Tab */
     .nav-tabs {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 25px;
-      background: var(--card-bg);
+      background: rgba(10, 14, 26, 0.8);
       padding: 6px;
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1px solid var(--border);
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
     }
 
     .tab-btn {
-      padding: 8px 20px;
+      padding: 10px 22px;
       border: none;
       background: transparent;
       color: var(--text-muted);
-      font-weight: 600;
-      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .tab-btn.active {
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--primary), var(--cyan));
       color: #fff;
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
     }
 
+    /* Khung Chứa Chính */
     .container {
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(168, 85, 247, 0.1);
+      position: relative;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 15%; right: 15%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan-glow), transparent);
     }
 
     .panel { display: none; }
     .panel.active { display: block; }
 
-    .header { text-align: center; margin-bottom: 24px; }
-    .header h1 { font-size: 24px; color: #fff; letter-spacing: 1px; }
-    .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .header { text-align: center; margin-bottom: 26px; }
+    .header h1 { 
+      font-size: 22px; 
+      background: linear-gradient(135deg, #fff 30%, var(--cyan-glow));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+    }
+    .header p { font-size: 13px; color: var(--text-muted); margin-top: 6px; font-weight: 600; }
 
     .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
       color: var(--green);
-      padding: 4px 12px;
+      padding: 6px 14px;
       border-radius: 20px;
       font-size: 12px;
-      font-weight: 600;
-      margin-top: 10px;
+      font-weight: 700;
+      margin-top: 12px;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
     }
 
-    .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); }
+    .dot { 
+      width: 8px; height: 8px; 
+      background: var(--green); 
+      border-radius: 50%; 
+      box-shadow: 0 0 10px var(--green); 
+      animation: pulse 1.5s infinite;
+    }
 
-    .form-group { margin-bottom: 18px; }
-    .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* Form Nhập Liệu */
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; }
     
     input, select {
       width: 100%;
-      padding: 12px 14px;
-      background: #0b0f19;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      padding: 14px 16px;
+      background: rgba(5, 7, 15, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
       color: #fff;
-      font-size: 14px;
+      font-size: 15px;
+      font-weight: 600;
       outline: none;
-      transition: border 0.2s;
+      transition: all 0.3s;
     }
 
-    input:focus, select:focus { border-color: var(--accent); }
+    input:focus, select:focus { 
+      border-color: var(--cyan); 
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+    }
 
+    /* Nút Bấm VIP */
     .btn {
       width: 100%;
-      padding: 12px;
-      background: var(--accent);
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       color: #fff;
       font-weight: 700;
       font-size: 14px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
     }
 
-    .btn:hover { background: var(--accent-hover); }
+    .btn:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+      background: linear-gradient(135deg, var(--primary-glow), #8b5cf6);
+    }
 
     .alert {
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      margin-top: 15px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 18px;
       display: none;
+      text-align: center;
     }
-    .alert-success { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); }
-    .alert-error { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid var(--red); }
+    .alert-success { 
+      background: rgba(16, 185, 129, 0.15); 
+      color: var(--green); 
+      border: 1px solid var(--green);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    }
+    .alert-error { 
+      background: rgba(244, 63, 94, 0.15); 
+      color: var(--red); 
+      border: 1px solid var(--red);
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+    }
 
-    /* Features List */
-    .features-list { margin-top: 20px; display: none; }
+    /* Danh Sách Tính Năng */
+    .features-list { margin-top: 24px; display: none; }
     .feature-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px;
-      background: #0b0f19;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      border: 1px solid var(--border);
+      padding: 14px;
+      background: rgba(5, 7, 15, 0.6);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
     }
-    .feature-name { font-size: 14px; font-weight: 600; }
-    .feature-status { font-size: 11px; padding: 4px 10px; border-radius: 4px; font-weight: 700; }
-    .status-active { background: rgba(16, 185, 129, 0.2); color: var(--green); }
-    .status-updating { background: rgba(245, 158, 11, 0.2); color: var(--yellow); }
+    .feature-name { font-size: 15px; font-weight: 700; }
+    .feature-status { font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 900; letter-spacing: 0.5px; }
+    .status-active { background: rgba(16, 185, 129, 0.2); color: var(--green); border: 1px solid var(--green); }
+    .status-updating { background: rgba(245, 158, 11, 0.2); color: var(--yellow); border: 1px solid var(--yellow); }
 
-    /* Nút App Store Happ */
+    /* Nút App Store iOS KÍCH HOẠT APP HAPP TRÊN IOS */
     .appstore-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      background: #000;
-      border: 1px solid #374151;
+      gap: 12px;
+      background: linear-gradient(135deg, #06b6d4, #2563eb);
+      border: 1px solid var(--cyan-glow);
       color: #fff;
-      padding: 14px;
+      padding: 16px;
       border-radius: 12px;
       text-decoration: none;
-      font-weight: bold;
-      font-size: 15px;
-      margin-top: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-      transition: transform 0.2s, border-color 0.2s;
+      font-weight: 900;
+      font-size: 14px;
+      font-family: 'Orbitron', sans-serif;
+      margin-top: 22px;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+      transition: all 0.3s;
     }
 
     .appstore-btn:hover {
-      transform: translateY(-2px);
-      border-color: #6b7280;
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 0 30px rgba(6, 182, 212, 0.7);
     }
 
-    /* Admin Panel Styling */
+    /* Admin Panel */
     .key-box {
-      background: #0b0f19;
-      padding: 12px;
-      border-radius: 8px;
-      border-left: 4px solid var(--accent);
-      margin-top: 15px;
+      background: rgba(5, 7, 15, 0.9);
+      padding: 14px;
+      border-radius: 10px;
+      border-left: 4px solid var(--cyan);
+      margin-top: 18px;
       word-break: break-all;
     }
-    .key-box strong { color: var(--accent); }
-    .keys-history { margin-top: 20px; max-height: 180px; overflow-y: auto; }
-    .history-item { font-size: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+    .key-box strong { color: var(--cyan-glow); font-size: 16px; }
+    .keys-history { margin-top: 24px; max-height: 200px; overflow-y: auto; }
+    .history-item { font-size: 13px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); font-weight: 600; }
   </style>
 </head>
 <body>
 
   <!-- Thanh chuyển tab -->
   <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('client')">🎮 Bảng Khách Hàng</button>
-    <button class="tab-btn" onclick="switchTab('admin')">🔑 Quản Lý Key (Admin)</button>
+    <button class="tab-btn active" onclick="switchTab('client')">🎮 BẢNG KHÁCH HÀNG</button>
+    <button class="tab-btn" onclick="switchTab('admin')">🔑 QUẢN LÝ KEY (ADMIN)</button>
   </div>
 
   <div class="container">
@@ -198,25 +269,25 @@
     <!-- BẢNG ĐIỀU KHIỂN KHÁCH HÀNG -->
     <div id="client-panel" class="panel active">
       <div class="header">
-        <h1>HỆ THỐNG KHÁCH HÀNG v2.3</h1>
-        <p>Xác thực mã Key & Kích hoạt tính năng</p>
-        <div class="status-badge"><span class="dot"></span> Máy Chủ Hoạt Động Bình Thường</div>
+        <h1>HỆ THỐNG ANH TÚ VIPPRO v2.3</h1>
+        <p>Xác thực Mã Key VIP & Kích hoạt tính năng</p>
+        <div class="status-badge"><span class="dot"></span> MÁY CHỦ HOẠT ĐỘNG BÌNH THƯỜNG</div>
       </div>
 
       <div class="form-group">
-        <label for="client-key-input">Nhập Mã Key Của Bạn:</label>
-        <input type="text" id="client-key-input" placeholder="Ví dụ: KEY-XXXX-XXXX">
+        <label for="client-key-input">NHẬP MÃ KEY CỦA BẠN:</label>
+        <input type="text" id="client-key-input" placeholder="Ví dụ: ANH TÚ VIPPRO-XXXX-XXXX">
       </div>
 
-      <button class="btn" onclick="authenticateKey()">KÍCH HOẠT KEY</button>
+      <button class="btn" onclick="authenticateKey()">KÍCH HOẠT KEY VIP</button>
 
       <div id="client-alert" class="alert"></div>
 
-      <!-- Danh sách tính năng và Nút tải App Happ -->
+      <!-- Danh sách tính năng và Nút Kích hoạt App Happ iOS -->
       <div id="features-container" class="features-list">
-        <h4 style="margin-bottom: 12px; font-size: 14px; color: var(--text-muted);">TÍNH NĂNG ĐÃ KÍCH HOẠT:</h4>
+        <h4 style="margin-bottom: 12px; font-size: 13px; color: var(--text-muted);">TÍNH NĂNG ĐÃ KÍCH HOẠT:</h4>
         <div class="feature-item">
-          <span class="feature-name">Tự Động Ngắm & Mượt Mà</span>
+          <span class="feature-name">Tự Động Ngắm & Mượt Mà VIP</span>
           <span class="feature-status status-active">AN TOÀN</span>
         </div>
         <div class="feature-item">
@@ -232,12 +303,12 @@
           <span class="feature-status status-active">AN TOÀN</span>
         </div>
 
-        <!-- Nút bấm mở ứng dụng Happ trên App Store -->
+        <!-- Nút bấm Mở & Kích hoạt App Happ trên iOS -->
         <a href="https://apps.apple.com/app/id6450534015" target="_blank" class="appstore-btn">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.85c.66-.8 1.11-1.92.99-3.04-.96.04-2.12.64-2.8 1.44-.61.71-1.14 1.86-.99 2.97 1.07.08 2.15-.57 2.8-1.37z"/>
           </svg>
-          MỞ APP HAPP TRÊN APP STORE
+          KÍCH HOẠT APP HAPP TRÊN IOS
         </a>
       </div>
     </div>
@@ -246,33 +317,33 @@
     <div id="admin-panel" class="panel">
       <div class="header">
         <h1>TẠO MÃ KEY MỚI</h1>
-        <p>Trang quản trị tạo và cấp phát Mã Key</p>
+        <p>Trang quản trị tạo và cấp phát Mã Key VIP</p>
       </div>
 
       <div class="form-group">
-        <label for="key-prefix">Tiền Tố Mã Key (Prefix):</label>
-        <input type="text" id="key-prefix" value="KEY">
+        <label for="key-prefix">TIỀN TỐ MÃ KEY (PREFIX):</label>
+        <input type="text" id="key-prefix" value="ANH TÚ VIPPRO">
       </div>
 
       <div class="form-group">
-        <label for="key-duration">Chọn Thời Hạn Key:</label>
+        <label for="key-duration">CHỌN THỜI HẠN KEY:</label>
         <select id="key-duration">
           <option value="1">1 Ngày (Dùng thử)</option>
-          <option value="7">7 Ngày (VIP Tuần)</option>
-          <option value="30" selected>30 Ngày (VIP Tháng)</option>
-          <option value="365">365 Ngày (Vĩnh Viễn)</option>
+          <option value="7">7 Ngày (Gói VIP Tuần)</option>
+          <option value="30" selected>30 Ngày (Gói VIP Tháng)</option>
+          <option value="365">365 Ngày (Gói VIP Vĩnh Viễn)</option>
         </select>
       </div>
 
-      <button class="btn" onclick="generateNewKey()">TẠO MÃ KEY</button>
+      <button class="btn" onclick="generateNewKey()">TẠO MÃ KEY MỚI</button>
 
       <div id="generated-key-display" style="display: none;" class="key-box">
-        <div>Mã Key: <strong id="new-key-value">---</strong></div>
-        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Thời hạn: <span id="new-key-days">0</span> ngày</div>
+        <div>Mã Key VIP: <strong id="new-key-value">---</strong></div>
+        <div style="font-size: 13px; color: var(--text-muted); margin-top: 6px;">Thời hạn: <span id="new-key-days">0</span> ngày</div>
       </div>
 
       <div class="keys-history">
-        <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">LỊCH SỬ MÃ KEY ĐÃ TẠO:</h4>
+        <h4 style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">LỊCH SỬ MÃ KEY ĐÃ TẠO:</h4>
         <div id="history-list"><i>Chưa có Key nào được tạo.</i></div>
       </div>
     </div>
@@ -301,7 +372,7 @@
     }
 
     function generateNewKey() {
-      const prefix = document.getElementById('key-prefix').value.trim() || 'KEY';
+      const prefix = document.getElementById('key-prefix').value.trim() || 'ANH TÚ VIPPRO';
       const duration = parseInt(document.getElementById('key-duration').value);
 
       const rand = () => Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -352,7 +423,7 @@
 
       if (!inputKey) {
         alertBox.className = 'alert alert-error';
-        alertBox.innerText = 'Vui lòng nhập Mã Key!';
+        alertBox.innerText = 'Vui lòng nhập Mã Key VIP!';
         alertBox.style.display = 'block';
         return;
       }
