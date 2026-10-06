@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Dashboard & Key System</title>
+  <style>
+    :root {
+      --bg-dark: #0a0d14;
+      --card-bg: #121824;
+      --accent: #8b5cf6;
+      --accent-hover: #7c3aed;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --border: #1f2937;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      background: var(--card-bg);
+      padding: 6px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h1 { font-size: 24px; color: #fff; letter-spacing: 1px; }
+    .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--green);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); }
+
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      background: #0b0f19;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    input:focus, select:focus { border-color: var(--accent); }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: var(--accent-hover); }
+
+    .alert {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-top: 15px;
+      display: none;
+    }
+    .alert-success { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); }
+    .alert-error { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid var(--red); }
+
+    /* Features List */
+    .features-list { margin-top: 20px; display: none; }
+    .feature-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: #0b0f19;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+    }
+    .feature-name { font-size: 14px; font-weight: 600; }
+    .feature-status { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 700; }
+    .status-active { background: rgba(16, 185, 129, 0.2); color: var(--green); }
+    .status-updating { background: rgba(245, 158, 11, 0.2); color: var(--yellow); }
+
+    /* Admin Panel Styling */
+    .key-box {
+      background: #0b0f19;
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 4px solid var(--accent);
+      margin-top: 15px;
+      word-break: break-all;
+    }
+    .key-box strong { color: var(--accent); }
+    .keys-history { margin-top: 20px; max-height: 180px; overflow-y: auto; }
+    .history-item { font-size: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('client')">🎮 Client Dashboard</button>
+    <button class="tab-btn" onclick="switchTab('admin')">🔑 Key Generator (Admin)</button>
+  </div>
+
+  <div class="container">
+
+    <!-- CLIENT DASHBOARD PANEL -->
+    <div id="client-panel" class="panel active">
+      <div class="header">
+        <h1>CLIENT SYSTEM v2.3</h1>
+        <p>Hệ thống xác thực & Quản lý tính năng</p>
+        <div class="status-badge"><span class="dot"></span> Server Operational</div>
+      </div>
+
+      <div class="form-group">
+        <label for="client-key-input">License Key của bạn:</label>
+        <input type="text" id="client-key-input" placeholder="Ví dụ: SOLITUDE-XXXX-XXXX">
+      </div>
+
+      <button class="btn" onclick="authenticateKey()">KÍCH HOẠT / AUTHENTICATE</button>
+
+      <div id="client-alert" class="alert"></div>
+
+      <!-- Feature List unlocked upon key authentication -->
+      <div id="features-container" class="features-list">
+        <h4 style="margin-bottom: 12px; font-size: 14px; color: var(--text-muted);">TÍNH NĂNG ĐÃ KÍCH HOẠT:</h4>
+        <div class="feature-item">
+          <span class="feature-name">Aimbot Lock & Smooth</span>
+          <span class="feature-status status-active">UNDETECTED</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-name">ESP Wallhack 3D Box</span>
+          <span class="feature-status status-active">UNDETECTED</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-name">Radar Hack Mini</span>
+          <span class="feature-status status-updating">UPDATING</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-name">No Recoil / Skin Changer</span>
+          <span class="feature-status status-active">UNDETECTED</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN KEY GENERATOR PANEL -->
+    <div id="admin-panel" class="panel">
+      <div class="header">
+        <h1>KEY GENERATOR</h1>
+        <p>Bảng điều khiển tạo Key dành cho Admin</p>
+      </div>
+
+      <div class="form-group">
+        <label for="key-prefix">Tiền tố Key (Prefix):</label>
+        <input type="text" id="key-prefix" value="SOLITUDE">
+      </div>
+
+      <div class="form-group">
+        <label for="key-duration">Thời hạn Key:</label>
+        <select id="key-duration">
+          <option value="1">1 Ngày (Trial)</option>
+          <option value="7">7 Ngày (VIP Week)</option>
+          <option value="30" selected>30 Ngày (VIP Month)</option>
+          <option value="365">365 Ngày (Lifetime)</option>
+        </select>
+      </div>
+
+      <button class="btn" onclick="generateNewKey()">TẠO KEY MỚI</button>
+
+      <div id="generated-key-display" style="display: none;" class="key-box">
+        <div>Key: <strong id="new-key-value">---</strong></div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Hạn dùng: <span id="new-key-days">0</span> ngày</div>
+      </div>
+
+      <div class="keys-history">
+        <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">DANH SÁCH KEY ĐÃ TẠO:</h4>
+        <div id="history-list"><i>Chưa có Key nào được tạo.</i></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Cơ sở dữ liệu Key lưu tạm trong localStorage của trình duyệt
+    let activeKeys = JSON.parse(localStorage.getItem('database_keys')) || {};
+
+    function saveKeysToStorage() {
+      localStorage.setItem('database_keys', JSON.stringify(activeKeys));
+    }
+
+    // Chuyển Tab giữa Client và Admin
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+
+      if (tab === 'client') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('client-panel').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('admin-panel').classList.add('active');
+        renderHistory();
+      }
+    }
+
+    // Admin: Hàm tạo Key
+    function generateNewKey() {
+      const prefix = document.getElementById('key-prefix').value.trim() || 'KEY';
+      const duration = parseInt(document.getElementById('key-duration').value);
+
+      const rand = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+      const generatedKey = `${prefix}-${rand()}-${rand()}`;
+
+      const expireDate = new Date();
+      expireDate.setDate(expireDate.getDate() + duration);
+
+      activeKeys[generatedKey] = {
+        key: generatedKey,
+        duration: duration,
+        expiresAt: expireDate.toISOString(),
+        createdAt: new Date().toLocaleDateString('vi-VN')
+      };
+
+      saveKeysToStorage();
+
+      document.getElementById('new-key-value').innerText = generatedKey;
+      document.getElementById('new-key-days').innerText = duration;
+      document.getElementById('generated-key-display').style.display = 'block';
+
+      renderHistory();
+    }
+
+    // Hiển thị lịch sử Key đã tạo
+    function renderHistory() {
+      const list = document.getElementById('history-list');
+      const keysArray = Object.values(activeKeys);
+
+      if (keysArray.length === 0) {
+        list.innerHTML = '<i>Chưa có Key nào được tạo.</i>';
+        return;
+      }
+
+      list.innerHTML = keysArray.map(k => `
+        <div class="history-item">
+          <strong>${k.key}</strong> - ${k.duration} ngày (Tạo ngày: ${k.createdAt})
+        </div>
+      `).reverse().join('');
+    }
+
+    // Client: Xác thực Key người dùng nhập
+    function authenticateKey() {
+      const inputKey = document.getElementById('client-key-input').value.trim();
+      const alertBox = document.getElementById('client-alert');
+      const featuresBox = document.getElementById('features-container');
+
+      alertBox.style.display = 'none';
+      featuresBox.style.display = 'none';
+
+      if (!inputKey) {
+        alertBox.className = 'alert alert-error';
+        alertBox.innerText = 'Vui lòng nhập License Key!';
+        alertBox.style.display = 'block';
+        return;
+      }
+
+      const keyData = activeKeys[inputKey];
+
+      if (!keyData) {
+        alertBox.className = 'alert alert-error';
+        alertBox.innerText = '❌ Key không hợp lệ hoặc không tồn tại trên hệ thống!';
+        alertBox.style.display = 'block';
+        return;
+      }
+
+      const now = new Date();
+      const expireDate = new Date(keyData.expiresAt);
+
+      if (now > expireDate) {
+        alertBox.className = 'alert alert-error';
+        alertBox.innerText = '❌ Key này đã hết hạn sử dụng!';
+        alertBox.style.display = 'block';
+        return;
+      }
+
+      // Kích hoạt thành công
+      const daysLeft = Math.ceil((expireDate - now) / (1000 * 60 * 60 * 24));
+      alertBox.className = 'alert alert-success';
+      alertBox.innerText = `Kích hoạt thành công! Hạn dùng còn lại: ${daysLeft} ngày.`;
+      alertBox.style.display = 'block';
+      featuresBox.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
