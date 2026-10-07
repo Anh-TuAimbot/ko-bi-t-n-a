@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DSeek AI R1 - ANH TÚ VIP</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Marked.js for Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Highlight.js for Code Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+    <style>
+        body {
+            background-color: #0b0f17;
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+
+        /* DeepThink Collapsible Block */
+        .think-block {
+            border-left: 3px solid #3b82f6;
+            background: rgba(30, 41, 59, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        /* Markdown Styling inside Messages */
+        .chat-content p {
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        .chat-content p:last-child {
+            margin-bottom: 0;
+        }
+        .chat-content code {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            color: #38bdf8;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .chat-content pre {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            overflow-x: auto;
+            margin: 0.75rem 0;
+        }
+        .chat-content pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+        .chat-content ul, .chat-content ol {
+            margin-left: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        .chat-content ul { list-style-type: disc; }
+        .chat-content ol { list-style-type: decimal; }
+        .chat-content li { margin-bottom: 0.25rem; }
+
+        /* Pulse loading animation */
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .animate-pulse-fast {
+            animation: pulse-fast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col justify-between overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-[#121824] border-b border-slate-800 px-4 py-3 flex items-center justify-between shrink-0 shadow-md">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-bold text-xl shadow-inner">
+                <i class="fa-solid fa-fish-fins"></i>
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h1 class="font-bold text-lg text-white tracking-wide">DSeek AI R1</h1>
+                    <span class="text-[10px] bg-blue-600/30 text-blue-400 font-semibold px-2 py-0.5 rounded border border-blue-500/30">ANH TÚ VIP</span>
+                </div>
+                <p class="text-xs text-slate-400 flex items-center">
+                    <span class="w-2 h-2 rounded-full bg-green-500 mr-1.5 animate-pulse"></span> Sẵn sàng • Server Free AI
+                </p>
+            </div>
+        </div>
+        
+        <button onclick="clearChat()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition" title="Xóa đoạn chat">
+            <i class="fa-solid fa-rotate-right text-lg"></i>
+        </button>
+    </header>
+
+    <!-- Chat Messages Container -->
+    <main id="chat-box" class="flex-1 overflow-y-auto p-4 space-y-4 max-w-4xl mx-auto w-full">
+        <!-- AI Welcome Message -->
+        <div class="flex items-start space-x-3">
+            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 mt-1 shadow">
+                <i class="fa-solid fa-fish-fins text-sm"></i>
+            </div>
+            <div class="bg-[#121824] border border-slate-800 text-slate-200 p-4 rounded-2xl rounded-tl-none max-w-[88%] shadow-sm">
+                <p class="font-semibold text-blue-400 text-sm mb-1">DSeek AI (DeepThink R1 Enabled)</p>
+                <p class="text-sm leading-relaxed">
+                    Xin chào <strong>Võ Nguyễn Anh Tú</strong>! Tôi là <strong>DSeek AI</strong> phiên bản R1. 
+                    Hệ thống đã kết nối trực tiếp với Server AI miễn phí. Bạn có thể hỏi bất kỳ câu hỏi nào về <em>lập trình, giải bài tập, cấu hình game Free Fire OB55, xuất file...</em> tôi sẽ suy nghĩ sâu và trả lời thực tế ngay lập tức!
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Input Controls -->
+    <footer class="bg-[#0b0f17] border-t border-slate-800/80 p-3 shrink-0 max-w-4xl mx-auto w-full">
+        <!-- DeepThink Toggle Button -->
+        <div class="flex items-center justify-between mb-2 px-1">
+            <button id="think-toggle" onclick="toggleThink()" class="flex items-center space-x-2 text-xs font-medium px-3 py-1.5 rounded-full bg-blue-600/20 text-blue-400 border border-blue-500/40 hover:bg-blue-600/30 transition">
+                <i class="fa-solid fa-brain"></i>
+                <span>DeepThink (R1) : <strong id="think-status">BẬT</strong></span>
+            </button>
+            <span class="text-[11px] text-slate-500">Mượt mà • Không cần API Key</span>
+        </div>
+
+        <!-- Input Box Container -->
+        <div class="relative bg-[#121824] border border-slate-700/80 rounded-2xl shadow-lg focus-within:border-blue-500 transition-all">
+            <textarea 
+                id="user-input" 
+                rows="2" 
+                placeholder="Nhập câu hỏi của bạn tại đây..." 
+                class="w-full bg-transparent text-white placeholder-slate-500 p-3 pr-14 rounded-2xl focus:outline-none resize-none text-base"
+                onkeydown="handleKeyPress(event)"
+            ></textarea>
+            
+            <button 
+                id="send-btn" 
+                onclick="sendMessage()" 
+                class="absolute right-2 bottom-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-xl shadow-md transition flex items-center justify-center disabled:opacity-50"
+            >
+                <span>Gửi</span>
+                <i class="fa-solid fa-paper-plane ml-1.5 text-xs"></i>
+            </button>
+        </div>
+        <p class="text-[10px] text-center text-slate-600 mt-2">DSeek AI - ANH TÚ VIP Edition • Tối ưu mượt mà cho Di động & Máy tính</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let isDeepThink = true;
+
+        function toggleThink() {
+            isDeepThink = !isDeepThink;
+            const statusText = document.getElementById('think-status');
+            const toggleBtn = document.getElementById('think-toggle');
+            
+            if (isDeepThink) {
+                statusText.innerText = 'BẬT';
+                toggleBtn.className = 'flex items-center space-x-2 text-xs font-medium px-3 py-1.5 rounded-full bg-blue-600/20 text-blue-400 border border-blue-500/40 hover:bg-blue-600/30 transition';
+            } else {
+                statusText.innerText = 'TẮT';
+                toggleBtn.className = 'flex items-center space-x-2 text-xs font-medium px-3 py-1.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700 transition';
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function clearChat() {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 mt-1 shadow">
+                        <i class="fa-solid fa-fish-fins text-sm"></i>
+                    </div>
+                    <div class="bg-[#121824] border border-slate-800 text-slate-200 p-4 rounded-2xl rounded-tl-none max-w-[88%] shadow-sm">
+                        <p class="font-semibold text-blue-400 text-sm mb-1">DSeek AI (DeepThink R1 Enabled)</p>
+                        <p class="text-sm leading-relaxed">
+                            Đã làm mới cuộc trò chuyện. Hãy nhập câu hỏi của bạn nhé!
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const chatBox = document.getElementById('chat-box');
+            const prompt = inputField.value.trim();
+
+            if (!prompt) return;
+
+            // Display User Message
+            const userMsgHTML = `
+                <div class="flex items-start justify-end space-x-3">
+                    <div class="bg-blue-600 text-white p-3.5 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm text-base leading-relaxed">
+                        ${escapeHtml(prompt)}
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-xs shrink-0 mt-1 shadow">
+                        U
+                    </div>
+                </div>
+            `;
+            chatBox.insertAdjacentHTML('beforeend', userMsgHTML);
+
+            // Clear Input & Disable Send Button
+            inputField.value = '';
+            inputField.style.height = 'auto';
+            sendBtn.disabled = true;
+
+            // Generate AI Message Container ID
+            const msgId = 'ai-msg-' + Date.now();
+            const thinkId = 'think-' + Date.now();
+            const contentId = 'content-' + Date.now();
+
+            // Insert Thinking/Loading UI
+            const aiMsgHTML = `
+                <div class="flex items-start space-x-3" id="${msgId}">
+                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 mt-1 shadow">
+                        <i class="fa-solid fa-fish-fins text-sm"></i>
+                    </div>
+                    <div class="bg-[#121824] border border-slate-800 text-slate-200 p-4 rounded-2xl rounded-tl-none max-w-[88%] w-full shadow-sm">
+                        ${isDeepThink ? `
+                            <div class="think-block rounded-lg p-3 mb-3 text-xs text-slate-300">
+                                <div class="flex items-center justify-between cursor-pointer mb-1" onclick="document.getElementById('${thinkId}').classList.toggle('hidden')">
+                                    <span class="font-semibold text-blue-400 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-brain text-blue-400 animate-pulse"></i> DSeek R1 đang suy nghĩ...
+                                    </span>
+                                    <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                                </div>
+                                <div id="${thinkId}" class="mt-2 text-slate-400 font-mono leading-relaxed whitespace-pre-wrap border-t border-slate-700/50 pt-2">Đang phân tích yêu cầu: "${escapeHtml(prompt)}"...</div>
+                            </div>
+                        ` : ''}
+                        <div id="${contentId}" class="chat-content text-base leading-relaxed"><i class="fa-solid fa-circle-notch fa-spin text-blue-500 mr-2"></i>Đang khởi tạo câu trả lời...</div>
+                    </div>
+                </div>
+            `;
+            chatBox.insertAdjacentHTML('beforeend', aiMsgHTML);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                // Connect to Free Public AI Proxy Server (No API Key Required)
+                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=openai&system=${encodeURIComponent("Bạn là DSeek AI (phiên bản DeepSeek R1 VIP dành cho Võ Nguyễn Anh Tú). Hãy luôn trả lời bằng tiếng Việt cực kỳ chi tiết, thông minh, mượt mà và chính xác. Nếu người dùng hỏi viết code, giải bài tập hay hỏi về Free Fire, hãy trả lời chi tiết và đầy đủ nhất.")}`);
+
+                if (!response.ok) throw new Error("Server AI đang bận");
+
+                const replyText = await response.text();
+
+                // Update Think Block Status
+                if (isDeepThink) {
+                    const thinkElem = document.getElementById(thinkId);
+                    if (thinkElem) {
+                        thinkElem.innerHTML = `✓ Đã phân tích xong câu hỏi\n✓ Tổng hợp dữ liệu ngữ cảnh\n✓ Tối ưu hóa phản hồi cho Võ Nguyễn Anh Tú`;
+                        thinkElem.previousElementSibling.querySelector('span').innerHTML = '<i class="fa-solid fa-circle-check text-green-400"></i> Đã suy nghĩ xong';
+                    }
+                }
+
+                // Render Answer with Markdown
+                const contentElem = document.getElementById(contentId);
+                contentElem.innerHTML = marked.parse(replyText);
+                
+                // Highlight syntax code
+                contentElem.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+
+            } catch (error) {
+                const contentElem = document.getElementById(contentId);
+                contentElem.innerHTML = `<span class="text-red-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Không thể kết nối Server AI. Vui lòng thử lại sau giây lát!</span>`;
+            } finally {
+                sendBtn.disabled = false;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
