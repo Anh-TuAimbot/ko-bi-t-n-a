@@ -1,0 +1,804 @@
+```
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(156, 163, 175, 0.3);
+        border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(156, 163, 175, 0.5);
+    }
+
+    /* Markdown styling overrides */
+    .markdown-body {
+        color: inherit;
+        font-size: 0.95rem;
+        line-height: 1.65;
+    }
+    .markdown-body p { margin-bottom: 0.75rem; }
+    .markdown-body p:last-child { margin-bottom: 0; }
+    .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+        font-weight: 600;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .markdown-body ul, .markdown-body ol {
+        padding-left: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    .markdown-body ul { list-style-type: disc; }
+    .markdown-body ol { list-style-type: decimal; }
+    .markdown-body code:not(pre code) {
+        background-color: rgba(110, 118, 129, 0.2);
+        padding: 0.2em 0.4em;
+        border-radius: 4px;
+        font-size: 85%;
+        font-family: 'Fira Code', monospace;
+    }
+    .markdown-body pre {
+        margin: 0.75rem 0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    .markdown-body blockquote {
+        border-left: 3px solid #3b82f6;
+        padding-left: 1rem;
+        opacity: 0.85;
+        font-style: italic;
+    }
+
+    /* Thinking animation pulse */
+    @keyframes pulse-subtle {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    .animate-pulse-subtle {
+        animation: pulse-subtle 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Glowing whale effect */
+    .glow-blue {
+        box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.4);
+    }
+</style>
+
+```
+
+```
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-darkbg-secondary border-r border-gray-200 dark:border-darkbg-border transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+    <!-- Logo Header -->
+    <div class="p-4 border-b border-gray-200 dark:border-darkbg-border flex items-center justify-between">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="resetChat()">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-blue-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                <!-- Whale/DSeek Icon -->
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                    <path d="M12,2A10,10 0 0,0 2,12C2,14.07 2.63,15.99 3.71,17.58L2.09,20.82C1.94,21.13 2,21.5 2.27,21.73C2.42,21.86 2.61,21.93 2.8,21.93C2.93,21.93 3.06,21.89 3.18,21.83L6.87,20C8.42,20.8 10.16,21.25 12,21.25C17.52,21.25 22,16.77 22,11.25C22,5.73 17.52,2 12,2M12,19.25C10.45,19.25 8.97,18.84 7.68,18.08L7.3,17.85L4.47,19.25L5.7,16.78L5.43,16.36C4.5,14.91 4,13.2 4,11.25C4,6.83 7.58,3.25 12,3.25C16.42,3.25 20,6.83 20,11.25C20,15.67 16.42,19.25 12,19.25Z" />
+                </svg>
+            </div>
+            <div>
+                <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-blue-600 via-brand-500 to-cyan-400 bg-clip-text text-transparent">DSeek AI</span>
+                <span class="text-[10px] block text-gray-500 dark:text-gray-400 font-medium -mt-1">v3.5 - Deep Reasoning</span>
+            </div>
+        </div>
+        <button id="close-sidebar-btn" class="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white p-1 rounded-lg">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+    </div>
+
+    <!-- New Chat Button -->
+    <div class="p-3">
+        <button onclick="createNewChat()" class="w-full flex items-center justify-center space-x-2 py-2.5 px-4 bg-brand-600 hover:bg-brand-700 active:scale-[0.98] text-white rounded-xl font-medium shadow-md shadow-blue-500/15 transition-all">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Cuộc trò chuyện mới</span>
+        </button>
+    </div>
+
+    <!-- History List -->
+    <div class="flex-1 overflow-y-auto px-3 py-2 space-y-1" id="chat-history-container">
+        <div class="px-2 py-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Lịch sử trò chuyện</div>
+        <div id="history-list" class="space-y-1">
+            <!-- Chat history items will be injected dynamically -->
+        </div>
+    </div>
+
+    <!-- Bottom User & Settings -->
+    <div class="p-3 border-t border-gray-200 dark:border-darkbg-border space-y-2">
+        <!-- API Key Status Toggle -->
+        <button onclick="openApiKeyModal()" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-darkbg-tertiary transition-colors">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="key" class="w-4 h-4 text-brand-500"></i>
+                <span>Cấu hình Gemini API</span>
+            </div>
+            <span id="api-status-badge" class="px-1.5 py-0.5 text-[10px] rounded font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Chưa cài</span>
+        </button>
+
+        <!-- Theme Switcher -->
+        <button id="theme-toggle" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-darkbg-tertiary transition-colors">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+                <span class="dark:hidden">Giao diện Tối</span>
+                <span class="hidden dark:block">Giao diện Sáng</span>
+            </div>
+        </button>
+
+        <!-- User Profile -->
+        <div class="flex items-center space-x-3 pt-2 border-t border-gray-100 dark:border-darkbg-border px-1">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+                DS
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-medium text-gray-900 dark:text-white truncate">DSeek User</p>
+                <p class="text-[10px] text-gray-500 dark:text-gray-400 truncate">Free Tier - Unlimited</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- Overlay for mobile sidebar -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+<main class="flex-1 flex flex-col h-full md:ml-64 relative overflow-hidden bg-gray-50 dark:bg-darkbg-primary">
+    
+    <!-- Header Bar -->
+    <header class="h-14 border-b border-gray-200 dark:border-darkbg-border flex items-center justify-between px-4 bg-white/80 dark:bg-darkbg-secondary/80 backdrop-blur-md z-10">
+        <div class="flex items-center space-x-3">
+            <button id="open-sidebar-btn" class="md:hidden text-gray-600 dark:text-gray-300 p-1.5 hover:bg-gray-100 dark:hover:bg-darkbg-tertiary rounded-lg">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+            
+            <!-- Model Switcher Selector -->
+            <div class="relative inline-block text-left">
+                <button id="model-selector-btn" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-darkbg-border bg-gray-50 dark:bg-darkbg-tertiary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-xs font-medium">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <span id="selected-model-name" class="font-semibold text-gray-800 dark:text-gray-200">DSeek R1 (Reasoning)</span>
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400"></i>
+                </button>
+                <!-- Dropdown Menu -->
+                <div id="model-dropdown" class="hidden absolute left-0 mt-2 w-64 rounded-xl bg-white dark:bg-darkbg-secondary border border-gray-200 dark:border-darkbg-border shadow-xl z-50 py-1 text-xs">
+                    <button onclick="selectModel('r1', 'DSeek R1 (Reasoning)')" class="w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-darkbg-tertiary flex items-start space-x-2">
+                        <i data-lucide="brain-circuit" class="w-4 h-4 text-brand-500 mt-0.5"></i>
+                        <div>
+                            <div class="font-semibold text-gray-900 dark:text-white">DSeek R1 (Reasoning)</div>
+                            <div class="text-[10px] text-gray-500">Suy luận sâu, giải toán, lập trình phức tạp</div>
+                        </div>
+                    </button>
+                    <button onclick="selectModel('v3', 'DSeek V3 (Chat Fast)')" class="w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-darkbg-tertiary flex items-start space-x-2">
+                        <i data-lucide="zap" class="w-4 h-4 text-amber-500 mt-0.5"></i>
+                        <div>
+                            <div class="font-semibold text-gray-900 dark:text-white">DSeek V3 (Chat Fast)</div>
+                            <div class="text-[10px] text-gray-500">Tốc độ siêu nhanh, giao tiếp tự nhiên</div>
+                        </div>
+                    </button>
+                    <button onclick="selectModel('gemini', 'Gemini 3 Flash Pro')" class="w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-darkbg-tertiary flex items-start space-x-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-purple-500 mt-0.5"></i>
+                        <div>
+                            <div class="font-semibold text-gray-900 dark:text-white">Gemini 3 Flash API</div>
+                            <div class="text-[10px] text-gray-500">Kết nối trực tiếp Google AI Key</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deep Thinking Toggle Switch -->
+        <div class="flex items-center space-x-3">
+            <label class="flex items-center cursor-pointer space-x-2 select-none">
+                <span class="text-xs font-medium text-gray-600 dark:text-gray-400 hidden sm:inline">DeepThink (R1)</span>
+                <div class="relative">
+                    <input type="checkbox" id="deepthink-toggle" class="sr-only" checked>
+                    <div class="w-9 h-5 bg-gray-300 dark:bg-gray-700 rounded-full transition-colors toggle-bg"></div>
+                    <div class="dot absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full transition-transform transform translate-x-4 bg-brand-500"></div>
+                </div>
+            </label>
+        </div>
+    </header>
+
+    <!-- Chat Output Messages Container -->
+    <div id="chat-messages-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+        
+        <!-- Welcome Hero Screen -->
+        <div id="welcome-screen" class="max-w-2xl mx-auto my-auto text-center py-12 px-4 flex flex-col items-center justify-center min-h-[70vh]">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 via-blue-500 to-cyan-400 flex items-center justify-center text-white shadow-xl glow-blue mb-6 animate-bounce">
+                <svg class="w-10 h-10 fill-current" viewBox="0 0 24 24">
+                    <path d="M12,2A10,10 0 0,0 2,12C2,14.07 2.63,15.99 3.71,17.58L2.09,20.82C1.94,21.13 2,21.5 2.27,21.73C2.42,21.86 2.61,21.93 2.8,21.93C2.93,21.93 3.06,21.89 3.18,21.83L6.87,20C8.42,20.8 10.16,21.25 12,21.25C17.52,21.25 22,16.77 22,11.25C22,5.73 17.52,2 12,2M12,19.25C10.45,19.25 8.97,18.84 7.68,18.08L7.3,17.85L4.47,19.25L5.7,16.78L5.43,16.36C4.5,14.91 4,13.2 4,11.25C4,6.83 7.58,3.25 12,3.25C16.42,3.25 20,6.83 20,11.25C20,15.67 16.42,19.25 12,19.25Z" />
+                </svg>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-2">Tôi có thể giúp gì cho bạn hôm nay?</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-sm max-w-md mb-8">Trải nghiệm trí tuệ nhân tạo DSeek thế hệ mới với khả năng suy luận logic chuyên sâu và xử lý mã nguồn thông minh.</p>
+            
+            <!-- Prompt Suggestion Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left max-w-xl">
+                <button onclick="usePrompt('Viết một ứng dụng Web Todo List bằng JavaScript có lưu LocalStorage')" class="p-3.5 rounded-xl border border-gray-200 dark:border-darkbg-border bg-white dark:bg-darkbg-secondary hover:border-brand-500 dark:hover:border-brand-500 transition-all text-xs group">
+                    <div class="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-brand-500 flex items-center justify-between">
+                        <span>Lập trình Web JS</span>
+                        <i data-lucide="code" class="w-4 h-4 text-gray-400 group-hover:text-brand-500"></i>
+                    </div>
+                    <div class="text-gray-500 dark:text-gray-400 text-[11px] mt-1 line-clamp-1">Tạo ứng dụng Todo List có LocalStorage</div>
+                </button>
+                <button onclick="usePrompt('Giải thích nguyên lý hoạt động của thuật toán DeepSeek R1 Reasoning')" class="p-3.5 rounded-xl border border-gray-200 dark:border-darkbg-border bg-white dark:bg-darkbg-secondary hover:border-brand-500 dark:hover:border-brand-500 transition-all text-xs group">
+                    <div class="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-brand-500 flex items-center justify-between">
+                        <span>Phân tích Suy luận</span>
+                        <i data-lucide="brain-circuit" class="w-4 h-4 text-gray-400 group-hover:text-brand-500"></i>
+                    </div>
+                    <div class="text-gray-500 dark:text-gray-400 text-[11px] mt-1 line-clamp-1">Tìm hiểu mô hình DSeek R1 Deep Thinking</div>
+                </button>
+                <button onclick="usePrompt('Soạn thư xin việc (Cover Letter) ấn tượng cho vị trí Frontend Developer')" class="p-3.5 rounded-xl border border-gray-200 dark:border-darkbg-border bg-white dark:bg-darkbg-secondary hover:border-brand-500 dark:hover:border-brand-500 transition-all text-xs group">
+                    <div class="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-brand-500 flex items-center justify-between">
+                        <span>Viết lách sáng tạo</span>
+                        <i data-lucide="pen-tool" class="w-4 h-4 text-gray-400 group-hover:text-brand-500"></i>
+                    </div>
+                    <div class="text-gray-500 dark:text-gray-400 text-[11px] mt-1 line-clamp-1">Soạn Cover Letter ứng tuyển Dev chuyên nghiệp</div>
+                </button>
+                <button onclick="usePrompt('Tóm tắt các xu hướng công nghệ Trí tuệ nhân tạo nổi bật năm 2026')" class="p-3.5 rounded-xl border border-gray-200 dark:border-darkbg-border bg-white dark:bg-darkbg-secondary hover:border-brand-500 dark:hover:border-brand-500 transition-all text-xs group">
+                    <div class="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-brand-500 flex items-center justify-between">
+                        <span>Nghiên cứu & Tóm tắt</span>
+                        <i data-lucide="sparkles" class="w-4 h-4 text-gray-400 group-hover:text-brand-500"></i>
+                    </div>
+                    <div class="text-gray-500 dark:text-gray-400 text-[11px] mt-1 line-clamp-1">Cập nhật xu hướng AI công nghệ mới nhất</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dynamic Messages List -->
+        <div id="messages-list" class="max-w-3xl mx-auto space-y-6 hidden"></div>
+    </div>
+
+    <div class="p-3 md:p-4 border-t border-gray-200 dark:border-darkbg-border bg-white/90 dark:bg-darkbg-secondary/90 backdrop-blur-md">
+        <div class="max-w-3xl mx-auto relative">
+            
+            <!-- Chat Input Form -->
+            <form id="chat-form" onsubmit="handleChatSubmit(event)" class="relative flex flex-col bg-gray-100 dark:bg-darkbg-tertiary rounded-2xl border border-gray-200 dark:border-darkbg-border focus-within:border-brand-500 dark:focus-within:border-brand-500 transition-all shadow-lg">
+                
+                <textarea 
+                    id="user-input" 
+                    rows="1" 
+                    placeholder="Hỏi DSeek bất kỳ điều gì..." 
+                    class="w-full px-4 py-3.5 bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 max-h-36"
+                    onkeydown="handleKeyDown(event)"
+                    oninput="autoResizeTextarea(this)"></textarea>
+
+                <!-- Tool Action Buttons inside bar -->
+                <div class="flex items-center justify-between px-3 pb-2.5 pt-1">
+                    <div class="flex items-center space-x-1">
+                        <!-- Attachment Simulation -->
+                        <button type="button" onclick="triggerFileUpload()" class="p-1.5 text-gray-500 hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-400 rounded-lg hover:bg-gray-200 dark:hover:bg-darkbg-border transition-colors">
+                            <i data-lucide="paperclip" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Simulated Voice Input -->
+                        <button type="button" id="mic-btn" onclick="toggleVoiceInput()" class="p-1.5 text-gray-500 hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-400 rounded-lg hover:bg-gray-200 dark:hover:bg-darkbg-border transition-colors">
+                            <i data-lucide="mic" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Search Web Toggle Simulation -->
+                        <button type="button" id="web-search-btn" onclick="toggleWebSearch()" class="flex items-center space-x-1 px-2 py-1 text-[11px] rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-darkbg-border transition-colors">
+                            <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+                            <span>Tìm kiếm Web</span>
+                        </button>
+                    </div>
+
+                    <!-- Send Button -->
+                    <button type="submit" id="send-btn" class="p-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-40 disabled:hover:bg-brand-600 text-white rounded-xl shadow-md transition-all flex items-center justify-center">
+                        <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </form>
+            <div class="text-[10px] text-center text-gray-400 dark:text-gray-500 mt-2">DSeek AI có thể mắc lỗi. Vui lòng kiểm tra lại thông tin quan trọng.</div>
+        </div>
+    </div>
+</main>
+
+<!-- API Key Modal -->
+<div id="api-key-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkbg-secondary border border-gray-200 dark:border-darkbg-border rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+        <button onclick="closeApiKeyModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center">
+                <i data-lucide="key" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-gray-900 dark:text-white text-base">Cấu hình Gemini API Key</h3>
+                <p class="text-xs text-gray-500">Kết nối chìa khóa API để chat thực tế</p>
+            </div>
+        </div>
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+            Nhập Gemini API Key của bạn để trò chuyện trực tiếp với AI thông minh. Key được lưu trữ bảo mật ngay trên trình duyệt của bạn (LocalStorage).
+        </p>
+        <input 
+            type="password" 
+            id="api-key-input" 
+            placeholder="AIzaSy..." 
+            class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-darkbg-border bg-gray-50 dark:bg-darkbg-tertiary text-sm text-gray-900 dark:text-white focus:outline-none focus:border-brand-500 mb-4"
+        >
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeApiKeyModal()" class="px-4 py-2 rounded-xl text-xs font-medium border border-gray-200 dark:border-darkbg-border text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-darkbg-tertiary">
+                Đóng
+            </button>
+            <button onclick="saveApiKey()" class="px-4 py-2 rounded-xl text-xs font-medium bg-brand-600 text-white hover:bg-brand-700 shadow-md">
+                Lưu cấu hình
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden File Input -->
+<input type="file" id="file-upload-input" class="hidden" onchange="handleFileSelected(event)">
+
+<script>
+    // App State
+    let state = {
+        apiKey: localStorage.getItem('dseek_gemini_api_key') || '',
+        selectedModel: 'r1',
+        deepThinkEnabled: true,
+        webSearchEnabled: false,
+        isRecording: false,
+        currentChatId: null,
+        chats: JSON.parse(localStorage.getItem('dseek_chats_history') || '[]'),
+        messages: []
+    };
+
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        setupTheme();
+        updateApiStatusBadge();
+        renderChatHistory();
+        
+        // Toggle Switch styling listener
+        document.getElementById('deepthink-toggle').addEventListener('change', (e) => {
+            state.deepThinkEnabled = e.target.checked;
+        });
+
+        // Mobile sidebar toggle
+        document.getElementById('open-sidebar-btn').addEventListener('click', toggleSidebar);
+        document.getElementById('close-sidebar-btn').addEventListener('click', toggleSidebar);
+        document.getElementById('sidebar-overlay').addEventListener('click', toggleSidebar);
+
+        // Close model dropdown on click outside
+        window.addEventListener('click', (e) => {
+            const btn = document.getElementById('model-selector-btn');
+            const dropdown = document.getElementById('model-dropdown');
+            if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('model-selector-btn').addEventListener('click', () => {
+            document.getElementById('model-dropdown').classList.toggle('hidden');
+        });
+    });
+
+    // Toggle Sidebar
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    }
+
+    // Setup Dark Mode Toggle
+    function setupTheme() {
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        themeToggleBtn.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('dseek_theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('dseek_theme', 'dark');
+            }
+        });
+
+        // Check stored preference
+        if (localStorage.getItem('dseek_theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    }
+
+    function selectModel(id, name) {
+        state.selectedModel = id;
+        document.getElementById('selected-model-name').innerText = name;
+        document.getElementById('model-dropdown').classList.add('hidden');
+    }
+
+    function openApiKeyModal() {
+        document.getElementById('api-key-input').value = state.apiKey;
+        document.getElementById('api-key-modal').classList.remove('hidden');
+    }
+
+    function closeApiKeyModal() {
+        document.getElementById('api-key-modal').classList.add('hidden');
+    }
+
+    function saveApiKey() {
+        const key = document.getElementById('api-key-input').value.trim();
+        state.apiKey = key;
+        localStorage.setItem('dseek_gemini_api_key', key);
+        updateApiStatusBadge();
+        closeApiKeyModal();
+    }
+
+    function updateApiStatusBadge() {
+        const badge = document.getElementById('api-status-badge');
+        if (state.apiKey) {
+            badge.innerText = 'Đã kết nối';
+            badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
+        } else {
+            badge.innerText = 'Chưa cài Key';
+            badge.className = 'px-1.5 py-0.5 text-[10px] rounded font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+        }
+    }
+
+    function createNewChat() {
+        state.currentChatId = Date.now().toString();
+        state.messages = [];
+        showWelcomeScreen();
+        renderChatHistory();
+        if (window.innerWidth < 768) toggleSidebar();
+    }
+
+    function resetChat() {
+        createNewChat();
+    }
+
+    function renderChatHistory() {
+        const list = document.getElementById('history-list');
+        list.innerHTML = '';
+
+        if (state.chats.length === 0) {
+            list.innerHTML = `<div class="text-[11px] text-gray-400 px-3 py-2">Chưa có lịch sử trò chuyện</div>`;
+            return;
+        }
+
+        state.chats.forEach(chat => {
+            const isActive = chat.id === state.currentChatId;
+            const item = document.createElement('div');
+            item.className = `group flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-xs transition-colors ${isActive ? 'bg-brand-500/10 text-brand-600 dark:text-brand-400 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darkbg-tertiary'}`;
+            item.onclick = () => loadChat(chat.id);
+
+            item.innerHTML = `
+                <div class="flex items-center space-x-2 truncate pr-2">
+                    <i data-lucide="message-square" class="w-3.5 h-3.5 shrink-0 text-gray-400"></i>
+                    <span class="truncate">${escapeHtml(chat.title)}</span>
+                </div>
+                <button onclick="deleteChat(event, '${chat.id}')" class="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 rounded transition-opacity">
+                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                </button>
+            `;
+            list.appendChild(item);
+        });
+        lucide.createIcons();
+    }
+
+    function loadChat(id) {
+        const chat = state.chats.find(c => c.id === id);
+        if (!chat) return;
+
+        state.currentChatId = chat.id;
+        state.messages = chat.messages || [];
+        
+        document.getElementById('welcome-screen').classList.add('hidden');
+        const msgList = document.getElementById('messages-list');
+        msgList.classList.remove('hidden');
+        msgList.innerHTML = '';
+
+        state.messages.forEach(msg => {
+            appendMessageToUI(msg.role, msg.content, msg.thinking);
+        });
+
+        renderChatHistory();
+        scrollToBottom();
+        if (window.innerWidth < 768) toggleSidebar();
+    }
+
+    function deleteChat(e, id) {
+        e.stopPropagation();
+        state.chats = state.chats.filter(c => c.id !== id);
+        localStorage.setItem('dseek_chats_history', JSON.stringify(state.chats));
+        if (state.currentChatId === id) {
+            createNewChat();
+        } else {
+            renderChatHistory();
+        }
+    }
+
+    function saveCurrentChat() {
+        if (!state.currentChatId) {
+            state.currentChatId = Date.now().toString();
+        }
+
+        const title = state.messages.length > 0 ? state.messages[0].content.substring(0, 30) + '...' : 'Cuộc trò chuyện mới';
+        const existingIndex = state.chats.findIndex(c => c.id === state.currentChatId);
+
+        if (existingIndex >= 0) {
+            state.chats[existingIndex].messages = state.messages;
+            state.chats[existingIndex].title = title;
+        } else {
+            state.chats.unshift({
+                id: state.currentChatId,
+                title: title,
+                messages: state.messages,
+                timestamp: Date.now()
+            });
+        }
+
+        localStorage.setItem('dseek_chats_history', JSON.stringify(state.chats));
+        renderChatHistory();
+    }
+
+    function autoResizeTextarea(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+
+    function handleKeyDown(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleChatSubmit(e);
+        }
+    }
+
+    function usePrompt(text) {
+        const input = document.getElementById('user-input');
+        input.value = text;
+        autoResizeTextarea(input);
+        input.focus();
+    }
+
+    function toggleVoiceInput() {
+        const btn = document.getElementById('mic-btn');
+        state.isRecording = !state.isRecording;
+
+        if (state.isRecording) {
+            btn.classList.add('text-red-500', 'animate-pulse');
+            simulateVoiceRecognition();
+        } else {
+            btn.classList.remove('text-red-500', 'animate-pulse');
+        }
+    }
+
+    function simulateVoiceRecognition() {
+        const input = document.getElementById('user-input');
+        const sampleTexts = ["Hãy lập trình một hàm tìm số nguyên tố bằng JavaScript", "DSeek R1 có khả năng suy luận như thế nào?"];
+        
+        setTimeout(() => {
+            if (state.isRecording) {
+                input.value = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
+                autoResizeTextarea(input);
+                toggleVoiceInput();
+            }
+        }, 2500);
+    }
+
+    function toggleWebSearch() {
+        state.webSearchEnabled = !state.webSearchEnabled;
+        const btn = document.getElementById('web-search-btn');
+        if (state.webSearchEnabled) {
+            btn.classList.add('bg-brand-500/10', 'text-brand-500', 'font-medium');
+        } else {
+            btn.classList.remove('bg-brand-500/10', 'text-brand-500', 'font-medium');
+        }
+    }
+
+    function triggerFileUpload() {
+        document.getElementById('file-upload-input').click();
+    }
+
+    function handleFileSelected(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const input = document.getElementById('user-input');
+            input.value += ` [Đính kèm tệp: ${file.name}] `;
+            autoResizeTextarea(input);
+        }
+    }
+
+    async function handleChatSubmit(e) {
+        e.preventDefault();
+        const inputEl = document.getElementById('user-input');
+        const text = inputEl.value.trim();
+
+        if (!text) return;
+
+        // Clear input
+        inputEl.value = '';
+        inputEl.style.height = 'auto';
+
+        // Hide welcome screen
+        document.getElementById('welcome-screen').classList.add('hidden');
+        const msgList = document.getElementById('messages-list');
+        msgList.classList.remove('hidden');
+
+        // Add user message
+        state.messages.push({ role: 'user', content: text });
+        appendMessageToUI('user', text);
+        scrollToBottom();
+
+        // Prepare AI placeholder message
+        const isDeepThink = state.deepThinkEnabled && (state.selectedModel === 'r1');
+
+        const aiNode = appendMessageToUI('assistant', '', '', isDeepThink);
+        scrollToBottom();
+
+        // Disable Send Button
+        const sendBtn = document.getElementById('send-btn');
+        sendBtn.disabled = true;
+
+        try {
+            if (state.apiKey) {
+                await callGeminiAPI(text, aiNode, isDeepThink);
+            } else {
+                await simulateDSeekResponse(text, aiNode, isDeepThink);
+            }
+        } catch (err) {
+            updateAIMessageContent(aiNode, "Đã xảy ra lỗi khi kết nối API: " + err.message);
+        } finally {
+            sendBtn.disabled = false;
+            saveCurrentChat();
+        }
+    }
+
+    // Call Gemini API via Fetch
+    async function callGeminiAPI(promptText, aiNode, isDeepThink) {
+        const apiKey = state.apiKey;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+        let thinkingText = "";
+        let responseText = "";
+
+        if (isDeepThink) {
+            thinkingText = "Đang phân tích cấu trúc câu hỏi...\nĐang kết nối kho tri thức chuyên sâu...\nĐang kiểm tra tính chính xác và kiểm thử các phương án...";
+            updateAIThinking(aiNode, thinkingText);
+        }
+
+        const payload = {
+            contents: [{ parts: [{ text: promptText }] }],
+            systemInstruction: {
+                parts: [{ text: "Bạn là DSeek AI, một trợ lý trí tuệ nhân tạo cực kỳ thông minh, chính xác, thân thiện. Trả lời bằng định dạng Markdown rõ ràng." }]
+            }
+        };
+
+        const res = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            throw new Error(`Lỗi server (${res.status})`);
+        }
+
+        const data = await res.json();
+        responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Không tìm thấy phản hồi từ model.";
+
+        await streamTextToUI(aiNode, responseText);
+
+        state.messages.push({
+            role: 'assistant',
+            content: responseText,
+            thinking: thinkingText
+        });
+    }
+
+    // Simulated Stream Response
+    async function simulateDSeekResponse(promptText, aiNode, isDeepThink) {
+        let thinkingSteps = [
+            "1. Xác định nội dung yêu cầu của người dùng...",
+            "2. Duyệt qua các thuật toán và mô hình tri thức DSeek R1...",
+            "3. Kiểm tra cú pháp và tối ưu hóa câu trả lời...",
+            "4. Hoàn tất quá trình suy luận logic."
+        ];
+
+        if (isDeepThink) {
+            for (let i = 0; i < thinkingSteps.length; i++) {
+                updateAIThinking(aiNode, thinkingSteps.slice(0, i + 1).join('\n'));
+                await new Promise(r => setTimeout(r, 400));
+            }
+        }
+
+        let generatedContent = "";
+        const lowerPrompt = promptText.toLowerCase();
+
+        if (lowerPrompt.includes("todo") || lowerPrompt.includes("code") || lowerPrompt.includes("lập trình")) {
+            generatedContent = `Dưới đây là mã nguồn Web Todo List hoàn chỉnh tích hợp LocalStorage:
+
+```
+
+\`\`\`javascript // Khởi tạo Todo App đơn giản class TodoApp { constructor() { this.todos = JSON.parse(localStorage.getItem('dseek_todos')) || \[\]; }
+
+```
+addTodo(text) {
+    const newTodo = { id: Date.now(), text, completed: false };
+    this.todos.push(newTodo);
+    this.save();
+}
+
+save() {
+    localStorage.setItem('dseek_todos', JSON.stringify(this.todos));
+}
+
+```
+
+} \`\`\`
+
+Bạn có thể tích hợp mã này trực tiếp vào ứng dụng Web của mình!`; } else if (lowerPrompt.includes("dseek") || lowerPrompt.includes("deepseek") || lowerPrompt.includes("r1")) { generatedContent = `**DSeek R1** là mô hình suy luận trí tuệ nhân tạo tiên tiến, nổi bật với khả năng:
+
+1. **Reinforcement Learning (Học tăng cường):** Tối ưu hóa chuỗi tư duy trước khi đưa ra câu trả lời.
+
+2. **Khả năng Lập trình mạnh mẽ:** Viết và giải thích mã nguồn chính xác cao.
+
+3. **Tiết kiệm chi phí tính toán:** Tối ưu hiệu năng vượt trội so me các mô hình truyền thống.`; } else { generatedContent = `Cảm ơn bạn đã hỏi về **"\${escapeHtml(promptText)}"**.
+
+Tôi là **DSeek AI**, sẵn sàng hỗ trợ bạn giải quyết công việc, lập trình, viết lách và suy luận bài toán phức tạp một cách nhanh chóng và chính xác.
+
+*(Mẹo: Bạn có thể cài đặt **Gemini API Key** ở góc dưới Sidebar để kết nối model AI trực tiếp!)*\`; }
+
+```
+        await streamTextToUI(aiNode, generatedContent);
+
+        state.messages.push({
+            role: 'assistant',
+            content: generatedContent,
+            thinking: isDeepThink ? thinkingSteps.join('\n') : ''
+        });
+    }
+
+    async function streamTextToUI(aiNode, fullText) {
+        const contentEl = aiNode.querySelector('.msg-content');
+        let currentText = "";
+        const words = fullText.split(" ");
+
+        for (let i = 0; i < words.length; i++) {
+            currentText += (i === 0 ? "" : " ") + words[i];
+            contentEl.innerHTML = marked.parse(currentText);
+            highlightCodeBlocks(contentEl);
+            scrollToBottom();
+            await new Promise(r => setTimeout(r, 25));
+        }
+    }
+
+    function appendMessageToUI(role, content, thinking = '', isThinkingActive = false) {
+        const msgList = document.getElementById('messages-list');
+        const wrapper = document.createElement('div');
+        wrapper.className = `flex space-x-3 md:space-x-4 ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+
+        if (role === 'user') {
+            wrapper.innerHTML = `
+                <div class="max-w-[85%] sm:max-w-[75%] bg-brand-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm shadow-md">
+                    <div class="whitespace-pre-wrap">${escapeHtml(content)}</div>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                    U
+                </div>
+            `;
+        } else {
+            wrapper.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-brand-600 to-blue-400 flex items-center justify-center text-white shrink-0 shadow-md">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12C2,14.07 2.63,15.99 3.71,17.58L2.09,20.82C1.94,21.13 2,21.5 2.27,21.73C2.42,21.86 2.61,21.93 2.8,21.93C2.93,21.93 3.06,21.89 3.18,21.83L6.87,20C8.42,20.8 10.16,21.25 12,21.25C17.52,21.25 22,16.77 22,11.25C22,5.73 17.52,2 12,2M12,19.25C10.45,19.25 8.97,18.84 7.68,18.08L7.3,17.85L4.47,19.25L5.7,16.78L5.43,16.36C4.5,14.91 4,13.2 4,11.25C4,6.83 7.58,3.25 12,3.25C16.42,3.25 20,6.83 20,11.25C20,15.67 16.42,19.25 12,19.25Z"/></svg>
+                </div>
+                <div class="max-w-[85%] sm:max-w-[80%] space-y-2">
+                    <div class="thinking-box ${isThinkingActive || thinking ? '' : 'hidden'} border border-gray-200 dark:border-darkbg-border rounded-xl bg-gray-50 dark:bg-darkbg-tertiary overflow-hidden text-xs">
+                        <button onclick="toggleThinkingBox(this)" class="w-full flex items-center justify-between px-3 py-2 text-gray-500 dark:text-gray-400 font-medium hover:bg-gray-100 dark:hover:bg-darkbg-border transition-colors">
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="brain-circuit" class="w-4 h-4 text-brand-500 animate-pulse-subtle"></i>
+                                <span>Suy nghĩ sâu (Deep Thinking)</span>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 transform transition-transform"></i>
+                        </button>
+                        <div class="thinking-text p-3 pt-0 border-t border-gray-200 dark:border-darkbg-border text-gray-60
+
+```
